@@ -1,1 +1,0 @@
-// Código Completo do Site da Henko - App.jsx pronto para o Vercel.

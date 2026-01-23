@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Henko | High Performance LED</title>
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS para o estilo premium -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React & Babel -->
+    <!-- React & Babel para rodar tudo direto no browser -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -41,10 +41,11 @@
             Music: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>,
             Store: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/></svg>,
             Trophy: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>,
+            Calculator: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="8" x2="16" y1="10" y2="10"/><path d="M8 14h8"/><path d="M12 18h4"/></svg>,
         };
 
         // --- 2. COMPONENTES DE UI ---
-        const ScrollReveal = ({ children, delay = 0, className = "" }) => {
+        function ScrollReveal({ children, delay = 0, className = "" }) {
             const [isVisible, setIsVisible] = useState(false);
             const ref = useRef(null);
             useEffect(() => {
@@ -59,40 +60,44 @@
                     {children}
                 </div>
             );
-        };
+        }
 
-        const TrustSeals = ({ iconSize = 32, textSize = "text-[10px]", alignment = "justify-start" }) => (
-            <div className={`grid grid-cols-3 gap-6 ${alignment}`}>
-                {[
-                    { label: "Garantia de Fábrica", icon: Icons.Award },
-                    { label: "Certificação Técnica", icon: Icons.ShieldCheck },
-                    { label: "Engenharia Própria", icon: Icons.Cpu }
-                ].map((seal, i) => {
-                    const Icon = seal.icon;
-                    return (
-                        <div key={i} className="flex flex-col items-center text-center gap-3 group">
-                            <div className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800 text-blue-500 group-hover:border-blue-600 transition-all">
-                                <Icon size={iconSize} />
+        function TrustSeals({ iconSize = 32, textSize = "text-[10px]", alignment = "justify-start" }) {
+            return (
+                <div className={`grid grid-cols-3 gap-6 ${alignment}`}>
+                    {[
+                        { label: "Garantia de Fábrica", icon: Icons.Award },
+                        { label: "Certificação Técnica", icon: Icons.ShieldCheck },
+                        { label: "Engenharia Própria", icon: Icons.Cpu }
+                    ].map((seal, i) => {
+                        const Icon = seal.icon;
+                        return (
+                            <div key={i} className="flex flex-col items-center text-center gap-3 group">
+                                <div className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800 text-blue-500 group-hover:border-blue-600 transition-all">
+                                    <Icon size={iconSize} />
+                                </div>
+                                <p className={`${textSize} font-black uppercase text-zinc-400 tracking-tighter leading-tight group-hover:text-white transition-colors text-center`}>
+                                    {seal.label.split(' ')[0]}<br/>{seal.label.split(' ').slice(1).join(' ')}
+                                </p>
                             </div>
-                            <p className={`${textSize} font-black uppercase text-zinc-400 tracking-tighter leading-tight group-hover:text-white transition-colors text-center`}>
-                                {seal.label.split(' ')[0]}<br/>{seal.label.split(' ').slice(1).join(' ')}
-                            </p>
-                        </div>
-                    );
-                })}
-            </div>
-        );
+                        );
+                    })}
+                </div>
+            );
+        }
 
-        const WhatsAppButton = () => (
-            <div className="fixed bottom-8 right-8 z-50">
-                <a href="https://wa.me/5511999700703" target="_blank" rel="noopener noreferrer" className="bg-[#25D366] hover:bg-[#128C7E] text-white p-4 rounded-full shadow-2xl transition-all hover:-translate-y-2 block">
-                    <Icons.MessageCircle size={28} />
-                </a>
-            </div>
-        );
+        function WhatsAppButton() {
+            return (
+                <div className="fixed bottom-8 right-8 z-50">
+                    <a href="https://wa.me/5511999700703" target="_blank" rel="noopener noreferrer" className="bg-[#25D366] hover:bg-[#128C7E] text-white p-4 rounded-full shadow-2xl transition-all hover:-translate-y-2 block">
+                        <Icons.MessageCircle size={28} />
+                    </a>
+                </div>
+            );
+        }
 
         // --- 3. PÁGINAS ---
-        const HomePage = ({ setView }) => {
+        function HomePage({ setView }) {
             const marqueeList = [
                 { name: "SBT", url: "https://upload.wikimedia.org/wikipedia/pt/thumb/4/41/Logotipo_do_SBT.svg/2048px-Logotipo_do_SBT.svg.png" },
                 { name: "NBA House", url: "https://upload.wikimedia.org/wikipedia/en/thumb/0/03/National_Basketball_Association_logo.svg/320px-National_Basketball_Association_logo.svg.png" },
@@ -102,7 +107,7 @@
             ];
 
             return (
-                <div className="text-left">
+                <div className="text-left animate-in">
                     <section className="relative min-h-screen py-32 flex flex-col justify-center overflow-hidden bg-zinc-950">
                         <div className="absolute inset-0 z-0">
                             <video src="https://i.imgur.com/MXrAThc.mp4" autoPlay loop muted playsInline className="w-full h-full object-cover opacity-40" />
@@ -116,7 +121,7 @@
                                         <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">Tecnologia Global</span>
                                     </div>
                                     <h1 className="text-5xl md:text-8xl font-black text-white mb-10 tracking-tight uppercase">PAINEL DE LED <br/> <span className="text-blue-600">NÃO É TUDO IGUAL.</span></h1>
-                                    <p className="text-xl md:text-2xl text-zinc-400 max-w-2xl font-medium mb-12 leading-relaxed">Performance real em cada pixel. A solução definitiva em LED para quem quer ser visto, sentido e lembrado.</p>
+                                    <p className="text-xl md:text-2xl text-zinc-400 max-w-2xl font-medium mb-12 leading-relaxed">Performance real em cada pixel. A solução definitiva para quem quer ser visto, sentido e lembrado.</p>
                                     <div className="flex gap-6 mb-16">
                                         <button onClick={() => setView('solucoes')} className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl transition-all">Ver Soluções</button>
                                         <button onClick={() => setView('contato')} className="bg-transparent border border-zinc-700 hover:border-white text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all">Falar com Consultor</button>
@@ -127,7 +132,6 @@
                         </div>
                     </section>
 
-                    {/* Seção Vantagens */}
                     <section className="py-24 bg-black border-b border-zinc-900">
                         <div className="container mx-auto px-6 md:px-12">
                             <ScrollReveal>
@@ -154,9 +158,8 @@
                         </div>
                     </section>
 
-                    {/* Marquee */}
-                    <section className="py-24 bg-zinc-950 border-y border-zinc-900 marquee-mask overflow-hidden">
-                        <div className="container mx-auto px-6 mb-12"><p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em]">Nossos Parceiros</p></div>
+                    <section className="py-24 bg-zinc-950 border-y border-zinc-900 marquee-mask overflow-hidden text-center">
+                        <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em] mb-12">Nossos Parceiros</p>
                         <div className="animate-marquee-infinite flex items-center">
                             {[...marqueeList, ...marqueeList].map((p, i) => (
                                 <div key={i} className="flex-shrink-0 px-24 md:px-32 min-w-[250px] flex items-center justify-center">
@@ -167,29 +170,31 @@
                     </section>
                 </div>
             );
-        };
+        }
 
-        const AboutPage = () => (
-            <div className="pt-32 min-h-screen bg-black">
-                <div className="container mx-auto px-6 md:px-12 py-12">
-                    <ScrollReveal>
-                        <div className="max-w-4xl mb-20 text-left">
-                            <h1 className="text-5xl md:text-8xl font-black text-white mb-4 tracking-tight uppercase leading-[0.9]">QUASE 20 ANOS <br/> <span className="text-blue-600">DE INOVAÇÃO.</span></h1>
-                            <p className="text-zinc-400 text-xl font-medium max-w-3xl mt-8">Líderes em engenharia visual de alta performance no Brasil, transformando marcas através de pixels e tecnologia de ponta.</p>
-                        </div>
-                    </ScrollReveal>
+        function AboutPage() {
+            return (
+                <div className="pt-32 min-h-screen bg-black animate-in">
+                    <div className="container mx-auto px-6 md:px-12 py-12">
+                        <ScrollReveal>
+                            <div className="max-w-4xl mb-20 text-left">
+                                <h1 className="text-5xl md:text-8xl font-black text-white mb-4 tracking-tight uppercase leading-[0.9]">QUASE 20 ANOS <br/> <span className="text-blue-600">DE INOVAÇÃO.</span></h1>
+                                <p className="text-zinc-400 text-xl font-medium max-w-3xl mt-8">Líderes em engenharia visual de alta performance no Brasil.</p>
+                            </div>
+                        </ScrollReveal>
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        }
 
-        const SolutionsPage = ({ setView }) => {
+        function SolutionsPage({ setView }) {
             const solutions = [
                 { title: "Shows e Eventos", desc: "Festivais e turnês com montagem de alta performance.", icon: Icons.Music, image: "https://i.imgur.com/WBzKu1z.mp4" },
                 { title: "Shopping & Varejo", desc: "Vitrines digitais de alta definição.", icon: Icons.Store, image: "https://i.imgur.com/aSbF4Z6.mp4" },
                 { title: "Arenas & Estádios", desc: "Placares e perímetros de campo.", icon: Icons.Trophy, image: "https://i.imgur.com/chcoJzz.mp4" }
             ];
             return (
-                <div className="pt-32 min-h-screen bg-zinc-950 pb-20">
+                <div className="pt-32 min-h-screen bg-zinc-950 pb-20 animate-in">
                     <div className="container mx-auto px-6 md:px-12 py-12 text-left">
                         <ScrollReveal><h1 className="text-5xl md:text-7xl font-black text-white mb-16 tracking-tight uppercase">NOSSAS <span className="text-blue-600">SOLUÇÕES</span></h1></ScrollReveal>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -205,7 +210,7 @@
                                                 <h3 className="text-2xl font-black text-white mb-4 uppercase">{sol.title}</h3>
                                                 <p className="text-zinc-500 text-sm mb-8 font-medium">{sol.desc}</p>
                                             </div>
-                                            <button onClick={() => setView('contato')} className="w-full py-4 border border-zinc-700 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">Orçamento</button>
+                                            <button onClick={() => setView('contato')} className="w-full py-4 border border-zinc-700 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">Solicitar Orçamento</button>
                                         </div>
                                     </div>
                                 </ScrollReveal>
@@ -214,9 +219,9 @@
                     </div>
                 </div>
             );
-        };
+        }
 
-        const ContactPage = () => {
+        function ContactPage() {
             const [calcWidth, setCalcWidth] = useState('');
             const [calcHeight, setCalcHeight] = useState('');
             const [calcDistance, setCalcDistance] = useState('');
@@ -232,7 +237,7 @@
             };
 
             return (
-                <div className="pt-32 bg-black pb-20 min-h-screen text-left">
+                <div className="pt-32 bg-black pb-20 min-h-screen text-left animate-in">
                     <div className="container mx-auto px-6 md:px-12">
                         <h1 className="text-5xl md:text-7xl font-black text-white mb-10 uppercase">VAMOS <br/> CRIAR <span className="text-blue-600">ALGO.</span></h1>
                         <div className="max-w-2xl bg-zinc-900/40 border border-zinc-800 rounded-[3rem] p-10">
@@ -242,7 +247,7 @@
                                 <input type="number" placeholder="Altura (m)" value={calcHeight} onChange={(e) => setCalcHeight(e.target.value)} className="bg-black border border-zinc-800 p-4 text-white rounded-2xl outline-none focus:border-blue-600" />
                                 <input type="number" placeholder="Visão (m)" value={calcDistance} onChange={(e) => setCalcDistance(e.target.value)} className="bg-black border border-zinc-800 p-4 text-white rounded-2xl outline-none focus:border-blue-600" />
                             </div>
-                            <button onClick={calculateLed} className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-blue-500 transition-all">Gerar Configuração</button>
+                            <button onClick={calculateLed} className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-blue-500">Gerar Configuração</button>
                             {calcResult && (
                                 <div className="mt-6 bg-black/60 border border-blue-600/20 rounded-[2rem] p-6 animate-in">
                                     <p className="text-blue-500 font-bold mb-2 uppercase text-xs">{calcResult.recommendedModel}</p>
@@ -253,9 +258,9 @@
                     </div>
                 </div>
             );
-        };
+        }
 
-        // --- COMPONENTE MESTRE ---
+        // --- COMPONENTE MESTRE (APP) ---
         function App() {
             const [currentView, setView] = useState('home');
 
@@ -263,7 +268,7 @@
 
             return (
                 <div className="min-h-screen flex flex-col bg-black overflow-x-hidden">
-                    <nav className="fixed w-full z-50 bg-black/80 backdrop-blur-xl border-b border-zinc-900 py-4">
+                    <nav className="fixed w-full z-50 bg-black/80 backdrop-blur-xl border-b border-zinc-800 py-4">
                         <div className="container mx-auto px-6 md:px-12 flex justify-between items-center text-left">
                             <img src="https://i.imgur.com/zXQw6Jy.png" alt="Henko Logo" className="h-10 w-auto cursor-pointer transition-transform hover:scale-105" onClick={() => setView('home')} />
                             <div className="hidden md:flex items-center space-x-10">
@@ -271,6 +276,10 @@
                                     <button key={v} onClick={() => setView(v)} className={`text-[10px] font-black uppercase tracking-widest transition-all hover:text-blue-500 ${currentView === v ? 'text-blue-500' : 'text-zinc-500'}`}>{v}</button>
                                 ))}
                                 <button onClick={() => setView('contato')} className="bg-blue-600 px-8 py-3 rounded-full text-white font-bold text-[10px] uppercase shadow-lg hover:bg-blue-500 transition-all">Orçamento</button>
+                            </div>
+                            {/* Mobile Menu Icon */}
+                            <div className="md:hidden">
+                                <Icons.Menu className="text-white w-6 h-6" />
                             </div>
                         </div>
                     </nav>
@@ -297,7 +306,9 @@
             );
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
+        // Inicialização do React
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
         root.render(<App />);
     </script>
 </body>

@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Henko | High Performance LED</title>
+    <title>Henko Produções | High Performance LED</title>
+    <!-- Ícone da aba (Favicon) -->
+    <link rel="icon" type="image/png" href="https://i.imgur.com/zXQw6Jy.png">
     <!-- Tailwind CSS para o estilo premium -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React & Babel para rodar tudo direto no browser -->
@@ -138,19 +140,19 @@
                 <section className="py-24 bg-black border-b border-zinc-900 text-left">
                     <div className="container mx-auto px-6 md:px-12">
                         <ScrollReveal>
-                            <div className="mb-20 text-left text-left">
+                            <div className="mb-20 text-left">
                                 <h2 className="text-4xl md:text-5xl font-black text-white mb-6 uppercase tracking-tight text-left">POR QUE <span className="text-blue-600 text-left">LED?</span></h2>
                                 <p className="text-zinc-500 max-w-2xl text-sm md:text-base font-medium text-left">A sinalização digital é a ferramenta mais poderosa de conversão do mercado moderno.</p>
                             </div>
                         </ScrollReveal>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-left text-left text-left">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-left">
                             {[
                                 { label: "Mais Vendas", value: "68%", icon: Icons.TrendingUp, desc: "A sinalização digital influencia diretamente na decisão de compra." },
                                 { label: "Custo x Benefício", value: "R$ 0,15", icon: Icons.DollarSign, desc: "Custo médio por mil impressões (CPM). Mais eficaz que mídia tradicional." },
                                 { label: "Retenção Visual", value: "8/10", icon: Icons.Eye, desc: "O brilho e movimento do LED Henko captam a atenção instintivamente." },
                                 { label: "Visibilidade", value: "+30%", icon: Icons.Zap, desc: "Aumento imediato na percepção da marca em locais de alto tráfego." }
                             ].map((stat, i) => (
-                                <div key={i} className="bg-zinc-900/40 border border-zinc-800 p-10 rounded-[2.5rem] group hover:border-blue-500/40 transition-all text-left text-left text-left">
+                                <div key={i} className="bg-zinc-900/40 border border-zinc-800 p-10 rounded-[2.5rem] group hover:border-blue-500/40 transition-all text-left">
                                     <div className="mb-8 p-4 bg-black rounded-2xl inline-block border border-zinc-800 group-hover:scale-110 transition-transform"><stat.icon className="text-blue-500" /></div>
                                     <h3 className="text-4xl font-black text-white mb-2 text-left">{stat.value}</h3>
                                     <h4 className="text-blue-500 font-black text-[10px] uppercase tracking-widest mb-4 text-left">{stat.label}</h4>
@@ -165,12 +167,12 @@
 
         function TechnicalDifferentials() {
             return (
-                <section className="py-24 bg-zinc-950 relative border-b border-zinc-900 overflow-hidden text-left text-left text-left">
-                    <div className="container mx-auto px-6 md:px-12 text-left text-left text-left text-left">
+                <section className="py-24 bg-zinc-950 relative border-b border-zinc-900 overflow-hidden text-left">
+                    <div className="container mx-auto px-6 md:px-12 text-left">
                         <ScrollReveal>
-                            <div className="mb-20 text-left text-left text-left">
-                                <p className="text-blue-500 text-[10px] font-black uppercase tracking-[0.5em] mb-4 text-left text-left text-left">DNA HENKO</p>
-                                <h2 className="text-4xl md:text-5xl font-black text-white mb-6 uppercase tracking-tight text-left text-left text-left text-left">OS 4 PILARES DA <span className="text-blue-600 text-left text-left text-left text-left">LIDERANÇA</span></h2>
+                            <div className="mb-20 text-left">
+                                <p className="text-blue-500 text-[10px] font-black uppercase tracking-[0.5em] mb-4 text-left">DNA HENKO</p>
+                                <h2 className="text-4xl md:text-5xl font-black text-white mb-6 uppercase tracking-tight text-left text-left">OS 4 PILARES DA <span className="text-blue-600 text-left">LIDERANÇA</span></h2>
                             </div>
                         </ScrollReveal>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
@@ -181,10 +183,10 @@
                                 { title: "Garantia Real", desc: "Pós-venda consultivo com garantia estendida e compromisso.", icon: Icons.ShieldCheck }
                             ].map((item, i) => (
                                 <ScrollReveal key={i} delay={i * 100}>
-                                    <div className="bg-zinc-900/50 p-10 rounded-[2.5rem] border border-zinc-800 transform transition-all duration-300 hover:-translate-y-3 hover:bg-zinc-900 h-full text-left text-left text-left">
-                                        <div className="mb-8 p-4 bg-black rounded-2xl inline-block border border-zinc-800 text-left text-left"><item.icon className="text-blue-500 text-left" /></div>
-                                        <h3 className="text-xl font-black text-white mb-4 uppercase tracking-tight text-left text-left text-left">{item.title}</h3>
-                                        <p className="text-zinc-500 text-sm leading-relaxed font-medium text-left text-left">{item.desc}</p>
+                                    <div className="bg-zinc-900/50 p-10 rounded-[2.5rem] border border-zinc-800 transform transition-all duration-300 hover:-translate-y-3 hover:bg-zinc-900 h-full text-left">
+                                        <div className="mb-8 p-4 bg-black rounded-2xl inline-block border border-zinc-800 text-left"><item.icon className="text-blue-500" /></div>
+                                        <h3 className="text-xl font-black text-white mb-4 uppercase tracking-tight text-left">{item.title}</h3>
+                                        <p className="text-zinc-500 text-sm leading-relaxed font-medium text-left">{item.desc}</p>
                                     </div>
                                 </ScrollReveal>
                             ))}
@@ -204,20 +206,20 @@
                 { id: 6, title: "Residencial", desc: "Cinema Outdoor", video: "https://i.imgur.com/YDL92g0.mp4", span: "md:col-span-1 md:row-span-2" }
             ];
             return (
-                <section className="py-24 bg-zinc-950 text-left text-left text-left">
-                    <div className="container mx-auto px-6 md:px-12 text-left text-left text-left">
-                        <ScrollReveal><h2 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tight mb-16 text-left text-left text-left text-left">NOSSOS <span className="text-blue-600 text-left text-left text-left">PROJETOS</span></h2></ScrollReveal>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[250px] md:auto-rows-[300px] grid-flow-dense text-left text-left">
+                <section className="py-24 bg-zinc-950 text-left">
+                    <div className="container mx-auto px-6 md:px-12 text-left">
+                        <ScrollReveal><h2 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tight mb-16 text-left">NOSSOS <span className="text-blue-600 text-left">PROJETOS</span></h2></ScrollReveal>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[250px] md:auto-rows-[300px] grid-flow-dense text-left">
                             {projects.map((proj, i) => (
                                 <ScrollReveal key={proj.id} delay={i * 100} className={proj.span}>
-                                    <div className="relative group h-full overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 text-left text-left text-left">
-                                        <video src={proj.video} autoPlay loop muted playsInline className={`w-full h-full object-cover transition-all duration-1000 group-hover:scale-105 opacity-80 group-hover:opacity-100 ${proj.position || 'object-center'} text-left text-left text-left`} />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60 text-left text-left text-left"></div>
-                                        <div className="absolute bottom-0 p-8 translate-y-2 group-hover:translate-y-0 transition-transform duration-300 w-full text-left text-left text-left text-left">
-                                            <h3 className="text-2xl font-black text-white mb-1 tracking-tight text-left text-left text-left">{proj.title}</h3>
-                                            <div className="flex items-center gap-2 text-left text-left text-left">
-                                                <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse text-left text-left text-left"></span>
-                                                <p className="text-blue-400 text-xs font-black uppercase tracking-widest font-mono text-left text-left text-left">{proj.desc}</p>
+                                    <div className="relative group h-full overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 text-left">
+                                        <video src={proj.video} autoPlay loop muted playsInline className={`w-full h-full object-cover transition-all duration-1000 group-hover:scale-105 opacity-80 group-hover:opacity-100 ${proj.position || 'object-center'}`} />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60 text-left"></div>
+                                        <div className="absolute bottom-0 p-8 translate-y-2 group-hover:translate-y-0 transition-transform duration-300 w-full text-left">
+                                            <h3 className="text-2xl font-black text-white mb-1 tracking-tight text-left">{proj.title}</h3>
+                                            <div className="flex items-center gap-2 text-left">
+                                                <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse text-left"></span>
+                                                <p className="text-blue-400 text-xs font-black uppercase tracking-widest font-mono text-left">{proj.desc}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -242,30 +244,30 @@
             ];
 
             return (
-                <div className="text-left animate-in text-left text-left text-left">
-                    <section className="relative min-h-screen py-32 flex flex-col justify-center overflow-hidden bg-zinc-950 text-left text-left text-left">
-                        <div className="absolute inset-0 z-0 overflow-hidden text-left text-left text-left">
+                <div className="text-left animate-in">
+                    <section className="relative min-h-screen py-32 flex flex-col justify-center overflow-hidden bg-zinc-950 text-left">
+                        <div className="absolute inset-0 z-0 overflow-hidden text-left text-left">
                             <video 
                                 src="https://i.imgur.com/MXrAThc.mp4" 
                                 autoPlay loop muted playsInline 
-                                className="w-full h-full object-cover object-right md:object-center scale-110 origin-top opacity-40 text-left text-left text-left" 
+                                className="w-full h-full object-cover object-right md:object-center scale-110 origin-top opacity-40 text-left" 
                             />
-                            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-transparent text-left text-left text-left"></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-transparent text-left text-left"></div>
                         </div>
-                        <div className="container mx-auto px-6 md:px-12 relative z-10 text-left text-left text-left text-left text-left">
+                        <div className="container mx-auto px-6 md:px-12 relative z-10 text-left">
                             <ScrollReveal>
-                                <div className="max-w-5xl text-left text-left text-left">
-                                    <div className="inline-flex items-center gap-3 px-4 py-2 border border-blue-500/20 rounded-full bg-blue-500/10 backdrop-blur-md mb-8 text-left text-left text-left">
-                                        <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse text-left text-left text-left"></span>
-                                        <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] text-left text-left text-left">Tecnologia Global</span>
+                                <div className="max-w-5xl text-left">
+                                    <div className="inline-flex items-center gap-3 px-4 py-2 border border-blue-500/20 rounded-full bg-blue-500/10 backdrop-blur-md mb-8 text-left">
+                                        <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse text-left"></span>
+                                        <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] text-left text-left">Tecnologia Global</span>
                                     </div>
-                                    <h1 className="text-5xl md:text-8xl font-black text-white mb-10 tracking-tight uppercase leading-[0.9] text-left text-left text-left">PAINEL DE LED <br/> <span className="text-blue-600 text-left text-left text-left">NÃO É TUDO IGUAL.</span></h1>
+                                    <h1 className="text-5xl md:text-8xl font-black text-white mb-10 tracking-tight uppercase leading-[0.9] text-left">PAINEL DE LED <br/> <span className="text-blue-600 text-left text-left">NÃO É TUDO IGUAL.</span></h1>
                                     <p className="text-xl md:text-2xl text-zinc-400 max-w-2xl font-medium mb-12 leading-relaxed text-left text-left text-left">Performance real em cada pixel. A solução definitiva em LED para quem quer ser visto, sentido e lembrado.</p>
-                                    <div className="flex gap-6 mb-16 text-left text-left text-left">
-                                        <button onClick={() => setView('solucoes')} className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl transition-all text-left text-left">Ver Soluções</button>
-                                        <button onClick={() => setView('contato')} className="bg-transparent border border-zinc-700 hover:border-white text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all text-left text-left">Falar com Consultor</button>
+                                    <div className="flex gap-6 mb-16 text-left">
+                                        <button onClick={() => setView('solucoes')} className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl transition-all text-left">Ver Soluções</button>
+                                        <button onClick={() => setView('contato')} className="bg-transparent border border-zinc-700 hover:border-white text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all text-left">Falar com Consultor</button>
                                     </div>
-                                    <div className="pt-8 border-t border-zinc-800/50 max-w-lg text-left text-left text-left text-left"><TrustSeals iconSize={20} textSize="text-[8px]" text-left text-left text-left /></div>
+                                    <div className="pt-8 border-t border-zinc-800/50 max-w-lg text-left text-left"><TrustSeals iconSize={20} textSize="text-[8px]" text-left /></div>
                                 </div>
                             </ScrollReveal>
                         </div>
@@ -274,12 +276,12 @@
                     <AdvantagesSection />
                     <TechnicalDifferentials />
 
-                    <section className="py-24 bg-zinc-950 border-y border-zinc-900 marquee-mask overflow-hidden text-center text-left text-left text-left">
+                    <section className="py-24 bg-zinc-950 border-y border-zinc-900 marquee-mask overflow-hidden text-center text-left">
                         <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em] mb-12 text-left px-12 text-left text-left">Nossos Parceiros</p>
-                        <div className="animate-marquee-infinite flex items-center text-left text-left text-left">
+                        <div className="animate-marquee-infinite flex items-center text-left">
                             {[...marqueeList, ...marqueeList].map((p, i) => (
                                 <div key={i} className="flex-shrink-0 px-24 md:px-32 min-w-[250px] flex items-center justify-center text-left text-left">
-                                    <img src={p.url} alt={p.name} style={{ transform: `scale(${p.scale || 1})` }} className="h-16 w-auto object-contain transition-all hover:scale-110 grayscale-0 opacity-100 text-left text-left" />
+                                    <img src={p.url} alt={p.name} style={{ transform: `scale(${p.scale || 1})` }} className="h-16 w-auto object-contain transition-all hover:scale-110 grayscale-0 opacity-100 text-left" />
                                 </div>
                             ))}
                         </div>
@@ -292,16 +294,16 @@
 
         function AboutPage() {
             return (
-                <div className="pt-32 min-h-screen bg-black animate-in text-left text-left text-left">
-                    <div className="container mx-auto px-6 md:px-12 py-12 text-left text-left text-left">
+                <div className="pt-32 min-h-screen bg-black animate-in text-left">
+                    <div className="container mx-auto px-6 md:px-12 py-12 text-left">
                         <ScrollReveal>
-                            <div className="max-w-4xl mb-20 text-left text-left text-left text-left text-left">
-                                <div className="inline-flex items-center gap-3 px-4 py-2 border border-blue-500/20 rounded-full bg-blue-500/10 backdrop-blur-md mb-8 text-left text-left text-left text-left">
-                                    <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse text-left text-left text-left"></span>
-                                    <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] text-left text-left text-left">Autoridade Máxima</span>
+                            <div className="max-w-4xl mb-20 text-left text-left">
+                                <div className="inline-flex items-center gap-3 px-4 py-2 border border-blue-500/20 rounded-full bg-blue-500/10 backdrop-blur-md mb-8 text-left">
+                                    <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse text-left text-left"></span>
+                                    <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] text-left text-left">Autoridade Máxima</span>
                                 </div>
-                                <h1 className="text-5xl md:text-8xl font-black text-white mb-4 tracking-tight uppercase leading-[0.9] text-left text-left text-left text-left">QUASE 20 ANOS <br/> <span className="text-blue-600 text-left text-left text-left">DE INOVAÇÃO.</span></h1>
-                                <p className="text-zinc-400 text-xl font-medium max-w-3xl mt-8 text-left text-left text-left text-left">Líderes em engenharia visual de alta performance no Brasil, transformando marcas através de tecnologia de ponta.</p>
+                                <h1 className="text-5xl md:text-8xl font-black text-white mb-4 tracking-tight uppercase leading-[0.9] text-left">QUASE 20 ANOS <br/> <span className="text-blue-600 text-left text-left">DE INOVAÇÃO.</span></h1>
+                                <p className="text-zinc-400 text-xl font-medium max-w-3xl mt-8 text-left text-left">Líderes em engenharia visual de alta performance no Brasil, transformando marcas através de tecnologia de ponta.</p>
                             </div>
                         </ScrollReveal>
 
@@ -312,9 +314,9 @@
                                 { label: "m² Instalados", value: "15k+" },
                                 { label: "Refresh Rate", value: "7680Hz" }
                             ].map((stat, i) => (
-                                <div key={i} className="bg-zinc-900/30 p-8 rounded-[2.5rem] border border-zinc-800 text-left text-left text-left">
+                                <div key={i} className="bg-zinc-900/30 p-8 rounded-[2.5rem] border border-zinc-800 text-left">
                                     <p className="text-blue-500 text-4xl md:text-6xl font-black mb-2 tracking-tighter text-left text-left text-left">{stat.value}</p>
-                                    <p className="text-zinc-600 text-[10px] font-black uppercase tracking-widest text-left text-left text-left">{stat.label}</p>
+                                    <p className="text-zinc-600 text-[10px] font-black uppercase tracking-widest text-left text-left text-left text-left">{stat.label}</p>
                                 </div>
                             ))}
                         </div>
@@ -331,21 +333,21 @@
                                     </div>
                                 </div>
                             </ScrollReveal>
-                            <div className="space-y-12 text-left text-left text-left">
-                                <div className="space-y-6 text-left text-left">
+                            <div className="space-y-12 text-left">
+                                <div className="space-y-6">
                                     <h3 className="text-3xl font-black text-white uppercase tracking-tight text-left text-left">O DNA DA HENKO</h3>
                                     <p className="text-zinc-400 text-lg leading-relaxed font-medium text-left text-left">Liderada por Alexandre Henko, destaque na Forbes Latina, a empresa consolidou-se como referência unindo eletrônica de classe mundial com assistência técnica local imbatível no Brasil.</p>
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left text-left">
-                                    <div className="bg-zinc-900/50 p-8 rounded-[2rem] border border-zinc-800 text-left text-left">
-                                        <Icons.Trophy size={32} className="mb-4 text-blue-500 text-left text-left" />
-                                        <h4 className="text-white font-black mb-3 text-xs uppercase tracking-widest text-left text-left">Excelência em Eventos</h4>
-                                        <p className="text-zinc-500 text-sm text-left text-left">Projetos que exigem 100% de confiabilidade e impacto visual imediato.</p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left text-left text-left">
+                                    <div className="bg-zinc-900/50 p-8 rounded-[2rem] border border-zinc-800 text-left text-left text-left">
+                                        <Icons.Trophy size={32} className="mb-4 text-blue-500 text-left text-left text-left" />
+                                        <h4 className="text-white font-black mb-3 text-xs uppercase tracking-widest text-left text-left text-left" />Excelência em Eventos
+                                        <p className="text-zinc-500 text-sm text-left text-left text-left">Projetos que exigem 100% de confiabilidade e impacto visual imediato.</p>
                                     </div>
-                                    <div className="bg-zinc-900/50 p-8 rounded-[2rem] border border-zinc-800 text-left text-left">
-                                        <Icons.ShieldCheck size={32} className="mb-4 text-blue-500 text-left text-left" />
-                                        <h4 className="text-white font-black mb-3 text-xs uppercase tracking-widest text-left text-left">Suporte Vitalício</h4>
-                                        <p className="text-zinc-500 text-sm text-left text-left text-left">Pós-venda consultivo com garantia real e reposição ágil de peças.</p>
+                                    <div className="bg-zinc-900/50 p-8 rounded-[2rem] border border-zinc-800 text-left text-left text-left">
+                                        <Icons.ShieldCheck size={32} className="mb-4 text-blue-500 text-left text-left text-left" />
+                                        <h4 className="text-white font-black mb-3 text-xs uppercase tracking-widest text-left text-left text-left" />Suporte Vitalício
+                                        <p className="text-zinc-500 text-sm text-left text-left text-left text-left">Pós-venda consultivo com garantia real e reposição ágil de peças.</p>
                                     </div>
                                 </div>
                             </div>
@@ -399,9 +401,9 @@
                 },
             ];
             return (
-                <div className="pt-32 min-h-screen bg-zinc-950 pb-20 animate-in text-left text-left text-left">
-                    <div className="container mx-auto px-6 md:px-12 py-12 text-left text-left text-left">
-                        <ScrollReveal><h1 className="text-5xl md:text-7xl font-black text-white mb-16 tracking-tight uppercase text-left text-left text-left">NOSSAS <span className="text-blue-600 text-left text-left text-left">SOLUÇÕES</span></h1></ScrollReveal>
+                <div className="pt-32 min-h-screen bg-zinc-950 pb-20 animate-in text-left text-left text-left text-left text-left">
+                    <div className="container mx-auto px-6 md:px-12 py-12 text-left text-left text-left text-left">
+                        <ScrollReveal><h1 className="text-5xl md:text-7xl font-black text-white mb-16 tracking-tight uppercase text-left text-left text-left">NOSSAS <span className="text-blue-600 text-left text-left text-left text-left text-left">SOLUÇÕES</span></h1></ScrollReveal>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 text-left text-left">
                             {solutions.map((sol, i) => (
                                 <ScrollReveal key={sol.title} delay={i * 100}>
@@ -497,17 +499,17 @@
 
             if (selectedPost) {
                 return (
-                    <div className="pt-32 min-h-screen bg-black pb-20 animate-in text-left text-left text-left">
-                        <div className="container mx-auto px-6 md:px-12 text-left text-left text-left">
+                    <div className="pt-32 min-h-screen bg-black pb-20 animate-in text-left text-left">
+                        <div className="container mx-auto px-6 md:px-12 text-left text-left">
                             <button onClick={() => setSelectedPost(null)} className="flex items-center gap-3 text-zinc-500 hover:text-white transition-colors mb-12 font-black uppercase text-xs tracking-widest text-left text-left text-left"><Icons.ArrowLeft size={18} /> Voltar aos Insights</button>
-                            <div className="max-w-4xl mx-auto text-left text-left text-left">
+                            <div className="max-w-4xl mx-auto text-left text-left">
                                 <div className={`relative rounded-[3rem] overflow-hidden border border-zinc-800 mb-12 shadow-2xl ${selectedPost.isPremium ? 'aspect-[9/16] h-[60vh] mx-auto md:w-2/3' : 'h-[45vh]'} text-left text-left text-left`}>
                                     {selectedPost.image.endsWith('.mp4') ? <video src={selectedPost.image} autoPlay loop muted playsInline className="w-full h-full object-cover" /> : <img src={selectedPost.image} alt={selectedPost.title} className="w-full h-full object-cover" />}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent text-left text-left text-left"></div>
                                 </div>
-                                <p className="text-blue-500 font-black text-xs uppercase tracking-[0.4em] mb-4 text-left text-left text-left">{selectedPost.tag} • {selectedPost.date}</p>
-                                <h1 className="text-4xl md:text-6xl font-black text-white mb-10 tracking-tight uppercase leading-[0.9] pr-4 text-left text-left text-left">{selectedPost.title}</h1>
-                                <div className="text-zinc-400 text-lg md:text-xl leading-relaxed blog-content text-left text-left text-left" dangerouslySetInnerHTML={{ __html: selectedPost.content }} />
+                                <p className="text-blue-500 font-black text-xs uppercase tracking-[0.4em] mb-4 text-left text-left">{selectedPost.tag} • {selectedPost.date}</p>
+                                <h1 className="text-4xl md:text-6xl font-black text-white mb-10 tracking-tight uppercase leading-[0.9] pr-4 text-left text-left">{selectedPost.title}</h1>
+                                <div className="text-zinc-400 text-lg md:text-xl leading-relaxed blog-content text-left text-left" dangerouslySetInnerHTML={{ __html: selectedPost.content }} />
                             </div>
                         </div>
                     </div>
@@ -515,25 +517,25 @@
             }
 
             return (
-                <div className="pt-32 min-h-screen bg-black pb-20 animate-in text-left text-left text-left text-left text-left text-left text-left text-left">
-                    <div className="container mx-auto px-6 md:px-12 py-12 text-left text-left text-left text-left text-left text-left text-left text-left">
-                        <ScrollReveal><h1 className="text-5xl md:text-8xl font-black text-white mb-12 tracking-tight uppercase text-left text-left text-left text-left text-left text-left">HENKO <br/> <span className="text-blue-600 text-left text-left text-left text-left text-left text-left text-left">INSIGHTS.</span></h1></ScrollReveal>
+                <div className="pt-32 min-h-screen bg-black pb-20 animate-in text-left text-left text-left text-left text-left text-left">
+                    <div className="container mx-auto px-6 md:px-12 py-12 text-left text-left text-left text-left text-left">
+                        <ScrollReveal><h1 className="text-5xl md:text-8xl font-black text-white mb-12 tracking-tight uppercase text-left text-left text-left text-left text-left text-left text-left">HENKO <br/> <span className="text-blue-600 text-left text-left text-left text-left text-left text-left text-left">INSIGHTS.</span></h1></ScrollReveal>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left text-left text-left text-left text-left text-left">
                             {posts.map((post) => (
                                 <div 
                                     key={post.id} 
                                     onClick={() => { setSelectedPost(post); window.scrollTo(0, 0); }} 
-                                    className={`group cursor-pointer transform transition-all duration-500 hover:-translate-y-4 text-left text-left text-left text-left ${post.isPremium ? 'md:col-span-2 flex flex-col md:flex-row gap-10 items-center bg-zinc-900/30 p-8 rounded-[3.5rem] border border-zinc-800' : ''}`}
+                                    className={`group cursor-pointer transform transition-all duration-500 hover:-translate-y-4 text-left text-left text-left text-left text-left ${post.isPremium ? 'md:col-span-2 flex flex-col md:flex-row gap-10 items-center bg-zinc-900/30 p-8 rounded-[3.5rem] border border-zinc-800 text-left text-left text-left text-left text-left text-left text-left' : 'text-left text-left text-left text-left text-left text-left text-left'}`}
                                 >
-                                    <div className={`relative overflow-hidden rounded-[2.5rem] border border-zinc-800 shadow-xl text-left text-left text-left text-left ${post.isPremium ? 'w-full md:w-[40%] aspect-[9/16] h-[60vh] flex-shrink-0' : 'h-80 mb-8 w-full'}`}>
+                                    <div className={`relative overflow-hidden rounded-[2.5rem] border border-zinc-800 shadow-xl text-left text-left text-left text-left ${post.isPremium ? 'w-full md:w-[40%] aspect-[9/16] h-[60vh] flex-shrink-0 text-left text-left text-left text-left' : 'h-80 mb-8 w-full text-left text-left text-left text-left'}`}>
                                         {post.image.endsWith('.mp4') ? <video src={post.image} autoPlay loop muted playsInline className="w-full h-full object-cover opacity-60" /> : <img src={post.image} alt={post.title} className="w-full h-full object-cover opacity-60" />}
                                         <div className="absolute top-6 left-6 px-4 py-1.5 text-white text-[9px] font-black uppercase tracking-widest rounded-full bg-blue-600 text-left text-left text-left text-left text-left">{post.tag}</div>
                                     </div>
-                                    <div className="flex-1 text-left text-left text-left text-left text-left">
-                                        <p className="text-blue-500 font-bold text-[10px] uppercase tracking-widest mb-3 text-left text-left text-left text-left text-left">{post.date}</p>
-                                        <h3 className={`${post.isPremium ? 'text-4xl md:text-6xl text-left text-left text-left text-left text-left' : 'text-3xl text-left text-left text-left text-left text-left'} font-black text-white leading-tight uppercase mb-4 text-left text-left text-left text-left text-left`}>{post.title}</h3>
-                                        <p className="text-zinc-500 font-medium text-lg leading-relaxed line-clamp-2 text-left text-left text-left text-left text-left">{post.excerpt}</p>
+                                    <div className="flex-1 text-left text-left text-left text-left text-left text-left">
+                                        <p className="text-blue-500 font-bold text-[10px] uppercase tracking-widest mb-3 text-left text-left text-left text-left text-left text-left text-left">{post.date}</p>
+                                        <h3 className={`${post.isPremium ? 'text-4xl md:text-6xl text-left text-left text-left text-left text-left text-left' : 'text-3xl text-left text-left text-left text-left text-left text-left'} font-black text-white leading-tight uppercase mb-4 text-left text-left text-left text-left text-left text-left`}>{post.title}</h3>
+                                        <p className="text-zinc-500 font-medium text-lg leading-relaxed line-clamp-2 text-left text-left text-left text-left text-left text-left text-left">{post.excerpt}</p>
                                         <div className="mt-6 flex items-center gap-3 text-white font-black text-[10px] uppercase text-left text-left text-left text-left text-left text-left">Ver matéria <Icons.ArrowRight size={14} className="group-hover:translate-x-2 transition-transform text-blue-600 text-left text-left text-left text-left text-left text-left text-left" /></div>
                                     </div>
                                 </div>
@@ -601,20 +603,20 @@
             };
 
             return (
-                <div className="pt-32 bg-black pb-20 min-h-screen text-left animate-in text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                <div className="pt-32 bg-black pb-20 min-h-screen text-left animate-in text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <div className="container mx-auto px-6 md:px-12 text-left text-left text-left text-left text-left text-left text-left text-left">
                         <ScrollReveal>
                             <h1 className="text-5xl md:text-7xl font-black text-white mb-10 uppercase leading-[0.9] text-left text-left text-left text-left text-left">VAMOS <br/> CRIAR <span className="text-blue-600 text-left text-left text-left text-left">ALGO.</span></h1>
                         </ScrollReveal>
                         
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start text-left text-left text-left text-left text-left">
-                            <div className="bg-zinc-900/40 border border-zinc-800 rounded-[3rem] p-10 text-left text-left text-left text-left text-left">
-                                <div className="flex items-center gap-4 mb-8 text-left text-left text-left text-left text-left text-left">
-                                    <div className="bg-blue-600 p-3 rounded-2xl text-left text-left text-left text-left text-left"><Icons.Calculator size={20} className="text-white text-left text-left text-left text-left text-left" /></div>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start text-left text-left text-left text-left text-left text-left text-left">
+                            <div className="bg-zinc-900/40 border border-zinc-800 rounded-[3rem] p-10 text-left text-left text-left text-left text-left text-left">
+                                <div className="flex items-center gap-4 mb-8 text-left text-left text-left text-left text-left text-left text-left">
+                                    <div className="bg-blue-600 p-3 rounded-2xl text-left text-left text-left text-left text-left text-left"><Icons.Calculator size={20} className="text-white text-left text-left text-left text-left text-left" /></div>
                                     <h3 className="text-white text-xs font-black uppercase tracking-[0.3em] text-left text-left text-left text-left">Simulador Técnico</h3>
                                 </div>
 
-                                <div className="flex bg-black p-1 rounded-2xl border border-zinc-800 mb-8 text-left text-left text-left text-left text-left">
+                                <div className="flex bg-black p-1 rounded-2xl border border-zinc-800 mb-8 text-left text-left text-left text-left text-left text-left">
                                     <button onClick={() => setEnvType('indoor')} className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${envType === 'indoor' ? 'bg-blue-600 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}>Indoor</button>
                                     <button onClick={() => setEnvType('outdoor')} className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${envType === 'outdoor' ? 'bg-blue-600 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}>Outdoor</button>
                                 </div>
@@ -634,11 +636,11 @@
                                 )}
                             </div>
 
-                            <div className="bg-zinc-900 p-8 md:p-12 rounded-[3.5rem] border border-blue-600/10 shadow-2xl text-left text-left text-left text-left text-left">
+                            <div className="bg-zinc-900 p-8 md:p-12 rounded-[3.5rem] border border-blue-600/10 shadow-2xl text-left text-left text-left text-left text-left text-left">
                                 <h3 className="text-3xl font-black text-white mb-8 tracking-tight uppercase text-left text-left text-left text-left text-left">CONTATO DIRETO</h3>
-                                <form className="space-y-6 text-left text-left text-left text-left text-left" onSubmit={handleWhatsApp}>
-                                    <input type="text" placeholder="Nome Completo" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full bg-black border border-zinc-800 p-6 text-white rounded-2xl outline-none focus:border-blue-600 shadow-inner text-left text-left text-left text-left text-left" />
-                                    <input type="tel" placeholder="WhatsApp / Telefone" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-black border border-zinc-800 p-6 text-white rounded-2xl outline-none focus:border-blue-600 shadow-inner text-left text-left text-left text-left text-left" />
+                                <form className="space-y-6 text-left text-left text-left text-left text-left text-left" onSubmit={handleWhatsApp}>
+                                    <input type="text" placeholder="Nome Completo" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full bg-black border border-zinc-800 p-6 text-white rounded-2xl outline-none focus:border-blue-600 shadow-inner text-left text-left text-left text-left text-left text-left" />
+                                    <input type="tel" placeholder="WhatsApp / Telefone" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-black border border-zinc-800 p-6 text-white rounded-2xl outline-none focus:border-blue-600 shadow-inner text-left text-left text-left text-left text-left text-left" />
                                     <textarea placeholder="Fale sobre o projeto..." rows={6} value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} className="w-full bg-black border border-zinc-800 p-6 text-white rounded-2xl outline-none focus:border-blue-600 resize-none shadow-inner text-left text-sm leading-relaxed text-left text-left text-left text-left text-left text-left"></textarea>
                                     <button type="submit" className="w-full bg-blue-600 text-white py-6 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-blue-500 transition-all text-center text-left text-left text-left text-left text-left">Enviar via WhatsApp</button>
                                 </form>
@@ -656,21 +658,21 @@
             useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [currentView]);
 
             return (
-                <div className="min-h-screen flex flex-col bg-black overflow-x-hidden text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                    <nav className="fixed w-full z-50 bg-black/80 backdrop-blur-xl border-b border-zinc-900 py-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                <div className="min-h-screen flex flex-col bg-black overflow-x-hidden text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                    <nav className="fixed w-full z-50 bg-black/80 backdrop-blur-xl border-b border-zinc-900 py-4 text-left text-left text-left text-left text-left text-left text-left text-left">
                         <div className="container mx-auto px-6 md:px-12 flex justify-between items-center text-left text-left text-left text-left text-left text-left text-left">
                             <img src="https://i.imgur.com/zXQw6Jy.png" alt="Henko Logo" className="h-10 w-auto cursor-pointer transition-transform hover:scale-105 text-left text-left text-left text-left text-left text-left" onClick={() => setView('home')} />
-                            <div className="hidden md:flex items-center space-x-10 text-left text-left text-left text-left text-left text-left text-left text-left">
+                            <div className="hidden md:flex items-center space-x-10 text-left text-left text-left text-left text-left text-left text-left">
                                 {['home', 'sobre', 'solucoes', 'insights'].map((v) => (
-                                    <button key={v} onClick={() => setView(v)} className={`text-[10px] font-black uppercase tracking-widest transition-all hover:text-blue-500 ${currentView === v ? 'text-blue-500 border-b-2 border-blue-500 pb-1' : 'text-zinc-500'} text-left text-left text-left text-left text-left text-left text-left text-left`}>
+                                    <button key={v} onClick={() => setView(v)} className={`text-[10px] font-black uppercase tracking-widest transition-all hover:text-blue-500 ${currentView === v ? 'text-blue-500 border-b-2 border-blue-500 pb-1' : 'text-zinc-500'} text-left text-left text-left text-left text-left text-left text-left`}>
                                         {v === 'solucoes' ? 'Soluções' : v === 'insights' ? 'Insights' : v.charAt(0).toUpperCase() + v.slice(1)}
                                     </button>
                                 ))}
                                 <button 
                                     onClick={() => setView('contato')} 
-                                    className="flex items-center gap-2 px-8 py-3 rounded-full text-white font-black text-[10px] uppercase shadow-lg btn-premium-glow transition-all text-left text-left text-left text-left text-left text-left text-left text-left"
+                                    className="flex items-center gap-2 px-8 py-3 rounded-full text-white font-black text-[10px] uppercase shadow-lg btn-premium-glow transition-all text-left text-left text-left text-left text-left"
                                 >
-                                    <Icons.Zap size={14} className="fill-current text-left text-left text-left text-left text-left text-left text-left text-left" />
+                                    <Icons.Zap size={14} className="fill-current text-left text-left text-left text-left text-left" />
                                     Orçamento Rápido
                                 </button>
                             </div>
@@ -694,7 +696,7 @@
                             <p className="text-zinc-700 text-[10px] font-mono tracking-widest uppercase text-center order-3 md:order-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">© 2026 HENKO PRODUÇÕES. TODOS OS DIREITOS RESERVADOS.</p>
                             <div className="flex gap-4 order-2 md:order-3 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                 <a href="#" className="w-10 h-10 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-500 hover:text-blue-500 hover:border-blue-500 transition-all text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><Icons.Zap size={18} className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /></a>
-                                <a href="#" className="w-10 h-10 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-500 hover:text-blue-500 hover:border-blue-500 transition-all text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><Icons.MessageCircle size={18} className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /></a>
+                                <a href="#" className="w-10 h-10 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-500 hover:text-blue-500 hover:border-blue-500 transition-all text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" ><Icons.MessageCircle size={18} className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /></a>
                             </div>
                         </div>
                     </footer>

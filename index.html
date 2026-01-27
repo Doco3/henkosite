@@ -1,683 +1,714 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Menu as MenuIcon, X, Instagram, Mail, Phone, Calendar, Award, Users, Tv, Music, MapPin, 
-  CheckCircle, ArrowRight, Lock, Edit2, Save, LogOut, Clock, CalendarDays, Shield, 
-  ChevronDown, Info, Beer, Trophy, Star, Activity, MessageCircle, History, TrendingUp, MapPinned, Ticket, Zap, Timer, Quote, ChevronLeft, ChevronRight, Camera, Upload, Loader2, Hash, LockKeyhole, Image as ImageIcon, Trash2, ArrowLeft, KeyRound
-} from 'lucide-react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
-import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Henko Produções | High Performance LED</title>
+    <!-- Ícone da aba (Favicon) atualizado -->
+    <link rel="icon" type="image/png" href="https://i.imgur.com/uxV7MUS.png">
+    <!-- Tailwind CSS para o estilo premium -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & Babel para rodar tudo direto no browser -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: black; margin: 0; padding: 0; }
+        @keyframes marquee-infinite { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .animate-marquee-infinite { animation: marquee-infinite 40s linear infinite; display: flex; width: max-content; }
+        .marquee-mask { mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent); }
+        .animate-in { animation: fadeIn 0.8s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Estilo para conteúdo de blog formatado */
+        .blog-content h2 { color: white; font-weight: 900; text-transform: uppercase; font-size: 1.5rem; margin-bottom: 1rem; }
+        .blog-content h3 { color: #3b82f6; font-weight: 800; text-transform: uppercase; font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .blog-content p { margin-bottom: 1rem; }
+        .blog-content ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 1rem; }
+        .blog-content li { margin-bottom: 0.5rem; }
 
-// --- CONFIGURAÇÃO DO FIREBASE ---
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-// appId consistente para garantir sincronização entre dispositivos
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'arena-henko-master-v1';
-
-let auth, db;
-if (firebaseConfig) {
-  const app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
-}
-
-// --- APP SETTINGS ---
-const ADMIN_HASH = "SGVua29AMjAyNiM="; // Henko@2026#
-const DEMO_MODE = true;
-
-// --- DADOS ESTÁTICOS (RESTAURAÇÃO TOTAL DO DESIGN ORIGINAL) ---
-
-const TEAM_LOGOS = {
-  SPFC: "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/2026.png",
-  SAO_BERNARDO: "https://upload.wikimedia.org/wikipedia/pt/e/e7/S%C3%A3o_Bernardo_Futebol_Clube_Logo.PNG",
-  SANTOS: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Santos_logo.svg/1045px-Santos_logo.svg.png",
-  MIRASSOL: "https://upload.wikimedia.org/wikipedia/commons/5/5b/Mirassol_FC_logo.png",
-  FLAMENGO: "https://upload.wikimedia.org/wikipedia/commons/9/93/Flamengo-RJ_%28BRA%29.png",
-  PRIMAVERA: "https://upload.wikimedia.org/wikipedia/pt/0/0c/Esporte_Clube_Primavera_logo.png",
-  GREMIO: "https://a.espncdn.com/i/teamlogos/soccer/500/6273.png",
-  CHAPECOENSE: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Associa%C3%A7%C3%A3o_Chapecoense_de_Futebol_logo.svg/500px-Associa%C3%A7%C3%A3o_Chapecoense_de_Futebol_logo.svg.png",
-  PORTUGUESA: "https://upload.wikimedia.org/wikipedia/commons/d/db/Portuguesa_de_Desportos.png"
-};
-
-const ARENA_MENU_LINKS = [
-  { name: 'Sobre', href: '#sobre', view: 'home' },
-  { name: 'Serviços', href: '#servicos', view: 'home' },
-  { name: 'Calendário 2026', href: '#calendario', view: 'home' },
-  { name: 'Mídia & Parceiros', href: '#parceiros', view: 'home' },
-  { name: 'Galeria', href: '#galeria', view: 'gallery' },
-  { name: 'Contato', href: '#contato', view: 'home' },
-];
-
-const ARENA_SERVICES_DATA = [
-  { title: 'Lounge de Hospitalidade', icon: <Users className="w-8 h-8 text-red-400" />, desc: 'Ponto exclusivo para networking, briefings e relaxamento pré-evento.', imageUrl: 'https://i.imgur.com/Bw5Yw4K.png' },
-  { title: 'Recepção Exclusiva', icon: <Award className="w-8 h-8 text-red-400" />, desc: 'Atendimento premium e acesso rápido e diferenciado desde a chegada.', imageUrl: 'https://i.imgur.com/pLUfmBf.png' },
-  { title: 'Ambiente Premium', icon: <Music className="w-8 h-8 text-red-400" />, desc: 'Open bar, Open Food com culinária sofisticada e entretenimento ao vivo.', imageUrl: 'https://i.imgur.com/Za2zSyx.png' },
-  { title: 'Networking', icon: <CheckCircle className="w-8 h-8 text-red-400" />, desc: 'O ambiente ideal para expandir a sua rede de contactos profissionais.', imageUrl: 'https://i.imgur.com/PrhiB8E.png' },
-  { title: 'Vista Privilegiada', icon: <MapPin className="w-8 h-8 text-red-400" />, desc: 'Acesso exclusivo e visão privilegiada do campo/palco.', imageUrl: 'https://i.imgur.com/7R1hOwg.png' },
-  { title: 'Branding & Mídia', icon: <Tv className="w-8 h-8 text-red-400" />, desc: 'Ativações de marca em Ring LED e relatórios de envolvimento.', imageUrl: 'https://i.imgur.com/Gy62moQ.png' },
-];
-
-const SPORT_EVENTS_DATA = [
-  { 
-    id: 2, name: 'Campeonato Paulista', subtitle: 'Paulistão Sicredi 2026', image: 'https://i.imgur.com/Kl9LPUl.png', 
-    matches: [
-      { id: 'm3', date: '31/01', home: 'SPFC', away: 'Santos', time: '20h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.SANTOS, location: 'Morumbis', scarcity: 'Alta Procura' },
-      { id: 'm4', date: '07/02', home: 'SPFC', away: 'Primavera', time: '20h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.PRIMAVERA, location: 'Morumbis' },
-    ]
-  },
-  { id: 4, name: 'Copa do Brasil', subtitle: 'Mata-Mata', image: 'https://upload.wikimedia.org/wikipedia/pt/9/96/CopaDoBrasil.png', matches: [] },
-  { id: 3, name: 'Sudamericana', subtitle: 'CONMEBOL', image: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/CONMEBOL_Sudamericana_logo_%282017%29.svg/250px-CONMEBOL_Sudamericana_logo_%282017%29.svg.png', matches: [] },
-  { 
-    id: 1, name: 'Brasileirão', subtitle: 'Série A', image: 'https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/85.png', 
-    matches: [
-      { id: 'br1', date: '28/01', home: 'SPFC', away: 'Flamengo', time: '21h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.FLAMENGO, location: 'Morumbis', scarcity: 'Alta Procura' },
-      { id: 'br2', date: '11/02', home: 'SPFC', away: 'Grêmio', time: '21h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.GREMIO, location: 'Morumbis' },
-      { id: 'br3', date: '12/03', home: 'SPFC', away: 'Chapecoense', time: '20h00', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.CHAPECOENSE, location: 'Morumbis' }
-    ]
-  },
-];
-
-const ENTERTAINMENT_EVENTS_DATA = [
-  { name: 'AC/DC', date: '2026', subtitle: 'PWR UP TOUR', image: 'https://i.imgur.com/XawIqwq.jpg', desc: 'O rock mundial invade o Morumbis.' },
-  { name: 'The Weeknd', date: '2026', subtitle: 'After Hours Til Dawn', image: 'https://i.imgur.com/1zpCq3e.jpg', desc: 'Show visual imperdível.' },
-  { name: 'Festa do Peão', date: 'Agosto 2026', subtitle: '70 Anos', image: 'https://i.imgur.com/GW8we0X.png', desc: 'Hospitalidade Arena Henko em Barretos.' },
-];
-
-const PARTNER_LOGOS_DATA = [
-  { name: 'Mali Pizzaria', logoUrl: 'https://i.imgur.com/YxcN44a.png', extraSize: true },
-  { name: 'Santa Helena', logoUrl: 'https://i.imgur.com/XjXzNik.png', extraSize: true },
-  { name: 'Tirolez', logoUrl: 'https://i.imgur.com/4NmAzLu.png', extraSize: true },
-  { name: 'Matsuya', logoUrl: 'https://i.imgur.com/EeCB2GL.png', extraSize: true },
-  { name: 'Cap-Lab', logoUrl: 'https://i.imgur.com/LDGTXoZ.png' },
-  { name: 'Oster', logoUrl: 'https://i.imgur.com/Kqwt8YH.png' },
-  { name: 'Kicaldo', logoUrl: 'https://i.imgur.com/6ZVogLo.png' },
-  { name: 'Estado Luso', logoUrl: 'https://i.imgur.com/rS7PHb3.png' },
-  { name: 'Churrasboat', logoUrl: 'https://i.imgur.com/CZ9lYO8.png', extraSize: true },
-  { name: 'Esfiha Imigrantes', logoUrl: 'https://i.imgur.com/VEjZgiI.png', extraSize: true },
-  { name: 'Colonial Padaria', logoUrl: 'https://i.imgur.com/cexxcrW.png' },
-  { name: 'Henko Produções', logoUrl: 'https://i.imgur.com/qVnwNYs.png' },
-  { name: 'Weach', logoUrl: 'https://i.imgur.com/jz15iRQ.png' },
-];
-
-const REVIEWS_DATA = [
-  { name: "Ricardo Silva", role: "Torcedor SPFC", text: "A melhor vista do Morumbis! O serviço de open food é impecável.", initial: "R" },
-  { name: "Fernanda M.", role: "Camarote Premium", text: "Experiência única. A comodidade de chegar e ter tudo pronto.", initial: "F" },
-  { name: "Pedro Almeida", role: "Empresário", text: "Simplesmente fantástico. O ambiente para networking é ótimo.", initial: "P" }
-];
-
-// --- UTILITÁRIOS ---
-
-const ImageWithFallback = ({ src, alt, className, fallback }) => {
-  const [error, setError] = useState(false);
-  useEffect(() => { setError(false); }, [src]);
-  if (error) return fallback || <div className={`${className} bg-neutral-800 flex items-center justify-center rounded-full`}><Shield className="w-1/2 h-1/2 text-gray-600" /></div>;
-  return <img src={src} alt={alt} className={className} onError={() => setError(true)} referrerPolicy="no-referrer" />;
-};
-
-const compressImage = (file) => {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      const img = new Image();
-      img.src = event.target.result;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 800;
-        const scaleSize = MAX_WIDTH / img.width;
-        canvas.width = MAX_WIDTH;
-        canvas.height = img.height * scaleSize;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL('image/jpeg', 0.7)); 
-      };
-    };
-  });
-};
-
-const App = () => {
-  // --- ESTADOS NAVEGAÇÃO ---
-  const [currentView, setCurrentView] = useState('home'); 
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
-  const [adminInputPass, setAdminInputPass] = useState('');
-  const [loginError, setLoginError] = useState(''); 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  // --- ESTADOS CONTEÚDO ---
-  const [activeSportId, setActiveSportId] = useState(2); 
-  const [expandedMatchKey, setExpandedMatchKey] = useState(null);
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [toast, setToast] = useState(null);
-  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
-
-  const [user, setUser] = useState(null);
-  const [galleryPhotos, setGalleryPhotos] = useState([]);
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef(null);
-
-  // --- LÓGICA DE FIREBASE ---
-
-  const showToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  const handleNavClick = (view, href) => {
-    setCurrentView(view);
-    setIsMenuOpen(false); 
-    if (view === 'home' && href && href !== '#') {
-      setTimeout(() => {
-        const element = document.querySelector(href);
-        if (element) element.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  const parseMatchDate = (dateStr, timeStr) => {
-    const [day, month] = dateStr.split('/').map(Number);
-    const [hours, minutes] = timeStr.replace('h', ':').split(':').map(Number);
-    return new Date(2026, month - 1, day, hours, minutes);
-  };
-
-  const getNextUpcomingMatch = () => {
-    const allMatches = SPORT_EVENTS_DATA.flatMap(sport => sport.matches.map(m => ({ ...m, parsedDate: parseMatchDate(m.date, m.time) })));
-    return allMatches.filter(m => m.parsedDate > new Date()).sort((a, b) => a.parsedDate - b.parsedDate)[0];
-  };
-
-  const nextMatch = getNextUpcomingMatch();
-
-  const getMatchTitle = (matchId) => {
-    let foundMatch = null;
-    SPORT_EVENTS_DATA.forEach(s => s.matches.forEach(m => { if(m.id === matchId) foundMatch = m }));
-    return foundMatch ? `${foundMatch.home} x ${foundMatch.away}` : "Evento Arena";
-  };
-
-  const isUploadAllowed = (dateStr, timeStr) => {
-    if (DEMO_MODE) return true; 
-    const matchDate = parseMatchDate(dateStr, timeStr);
-    const now = new Date();
-    const diffHours = (now - matchDate) / (1000 * 60 * 60);
-    return diffHours >= -2 && diffHours <= 4;
-  };
-
-  const generateMatchHashtag = (home, away) => `#ArenaHenko${home.replace(/\s+/g, '')}x${away.replace(/\s+/g, '')}`;
-
-  const handleAdminLogin = (e) => {
-    e.preventDefault(); 
-    if (btoa(adminInputPass) === ADMIN_HASH) { setIsAdminLoggedIn(true); setLoginError(''); } 
-    else { setLoginError("Senha incorreta"); }
-  };
-
-  const handleDeletePhoto = async (photoId) => {
-    if (!db || !user) return;
-    try {
-      const photoDoc = doc(db, 'artifacts', appId, 'public', 'data', 'fan_gallery', photoId);
-      await deleteDoc(photoDoc);
-      setDeleteConfirmId(null);
-      showToast("Foto removida com sucesso!");
-    } catch (err) {
-      showToast("Erro ao remover foto.");
-    }
-  };
-
-  // RULE 3: Auth first, THEN setup listeners
-  useEffect(() => {
-    if (!auth) return;
-    const initAuth = async () => {
-      try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
+        /* Efeito de brilho ultra chamativo para o botão de orçamento */
+        .btn-premium-glow {
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+            background: linear-gradient(90deg, #1d4ed8, #3b82f6, #06b6d4);
+            background-size: 200% auto;
+            animation: shine-pulse 3s infinite;
+            transition: all 0.4s ease;
         }
-      } catch (e) {
-        console.error("Auth Error:", e);
-      }
-    };
-    initAuth();
-    const unsubscribe = onAuthStateChanged(auth, setUser);
-    return () => unsubscribe();
-  }, []);
+        
+        @keyframes shine-pulse {
+            0% { background-position: 0% 50%; box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
+            50% { background-position: 100% 50%; box-shadow: 0 0 30px rgba(6, 182, 212, 0.7); }
+            100% { background-position: 0% 50%; box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
+        }
 
-  // REAL-TIME SYNC: Only active if user is authenticated
-  useEffect(() => {
-    if (!user || !db) return;
-    
-    // RULE 1: Absolute strict path
-    const photosCollection = collection(db, 'artifacts', appId, 'public', 'data', 'fan_gallery');
-    
-    const unsubscribe = onSnapshot(photosCollection, (snapshot) => {
-      const photos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      // Rule 2: Memory sorting
-      photos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-      setGalleryPhotos(photos);
-    }, (err) => {
-      console.error("Firebase Insufficient Permissions / Sync Error:", err);
-    });
+        .btn-premium-glow:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.9);
+        }
+    </style>
+</head>
+<body class="bg-black text-white antialiased overflow-x-hidden">
+    <div id="root"></div>
 
-    return () => unsubscribe();
-  }, [user]);
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
 
-  const handleFileUpload = async (event, matchId) => {
-    const file = event.target.files?.[0];
-    if (!file || !user || !db) return;
-    setIsUploading(true);
-    try {
-      const compressedBase64 = await compressImage(file);
-      const photosCollection = collection(db, 'artifacts', appId, 'public', 'data', 'fan_gallery');
-      await addDoc(photosCollection, {
-        matchId, 
-        image: compressedBase64, 
-        userId: user.uid, 
-        userName: "Torcedor VIP", 
-        timestamp: Date.now()
-      });
-      showToast("Sua foto foi enviada!");
-    } catch (err) { 
-      console.error(err); 
-      showToast("Erro ao enviar foto.");
-    } finally { 
-      setIsUploading(false); 
-      if (fileInputRef.current) fileInputRef.current.value = ''; 
-    }
-  };
+        // --- 1. SISTEMA DE ÍCONES ---
+        const Icons = {
+            Menu: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>,
+            X: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>,
+            Zap: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+            Award: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>,
+            ShieldCheck: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>,
+            Cpu: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>,
+            TrendingUp: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
+            DollarSign: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
+            Eye: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>,
+            MessageCircle: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>,
+            Instagram: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>,
+            Music: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>,
+            Store: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/></svg>,
+            Trophy: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>,
+            Calculator: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="8" x2="16" y1="10" y2="10"/><path d="M8 14h8"/><path d="M12 18h4"/></svg>,
+            Settings: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>,
+            Wrench: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>,
+            Boxes: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>,
+            Fuel: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" x2="15" y1="22" y2="22"/><line x1="4" x2="14" y1="9" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/></svg>,
+            Sun: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>,
+            Home: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+            Users: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>,
+            Plane: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-1.2-.3-2.4.5-2.8 1.7-.3 1.2.5 2.4 1.7 2.8L12 12.5 8 16.5H4l-2 2 4 4 2-2v-4l4-4 1.7 8.2c.3 1.2 1.5 2 2.8 1.7 1.2-.3 2-1.5 1.7-2.8z"/></svg>,
+            Mail: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/><rect width="20" height="16" x="2" y="4" rx="2"/></svg>,
+            ArrowLeft: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>,
+            ArrowRight: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>,
+        };
 
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    if (!nextMatch) return;
-    const interval = setInterval(() => {
-      const diff = nextMatch.parsedDate - new Date();
-      if (diff > 0) {
-        setTimeLeft({
-          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((diff / 1000 / 60) % 60),
-          seconds: Math.floor((diff / 1000) % 60),
-        });
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [nextMatch]);
-
-  const getWaLink = (msg) => `https://wa.me/5511940741355?text=${encodeURIComponent(msg)}`;
-
-  // --- RENDERS ---
-
-  const renderHome = () => (
-    <div className="animate-fadeIn">
-      {/* Hero */}
-      <section className="relative h-[95vh] flex flex-col items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-30"><img src="https://i.imgur.com/lKKQfgK.png" className="w-full h-full object-cover" alt="Hero Arena" /></div>
-        <div className="relative z-10 px-4 text-center max-w-5xl mx-auto text-white">
-          <h1 className="text-6xl md:text-9xl font-black mb-6 uppercase leading-none tracking-tighter">ARENA <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-800">HENKO</span></h1>
-          <p className="text-lg md:text-xl text-gray-400 font-light mb-12 uppercase tracking-[0.3em]">Hospitalidade Premium & Experiências</p>
-          <button onClick={() => handleNavClick('home', '#calendario')} className="inline-flex px-12 py-5 bg-red-600 text-white rounded-full font-black text-sm hover:bg-red-700 transition-all items-center gap-3 uppercase tracking-widest shadow-2xl">Explorar Agenda <ArrowRight className="w-5 h-5"/></button>
-
-          <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl mx-auto">
-            {nextMatch && (
-              <button onClick={() => handleNavClick('home', '#calendario')} className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-5 rounded-3xl flex items-center gap-4 hover:border-red-600 transition-all text-left group relative">
-                <div className="absolute -top-3 -right-2 bg-red-600 text-white text-[8px] font-black px-3 py-1 rounded-full animate-bounce shadow-lg shadow-red-900/50">ÚLTIMAS VAGAS</div>
-                <div className="bg-neutral-800 p-3 rounded-2xl group-hover:bg-red-600 transition-colors shrink-0"><ImageWithFallback src={nextMatch.homeLogo} className="w-8 h-8 object-contain" /></div>
-                <div className="flex-1 min-w-0 text-white">
-                   <p className="text-[9px] text-red-500 font-black uppercase tracking-widest mb-1 flex items-center gap-1"><Ticket className="w-3 h-3"/> Próximo Jogo</p>
-                   <p className="text-sm font-black truncate uppercase">{nextMatch.home} x {nextMatch.away}</p>
-                   <div className="bg-black/40 px-2 py-1 rounded-lg text-[9px] font-mono text-gray-300 border border-neutral-800 w-fit mt-1 uppercase">
-                      {timeLeft.days}D : {timeLeft.hours}H : {timeLeft.minutes}M
-                   </div>
+        // --- 2. COMPONENTES DE UI ---
+        function ScrollReveal({ children, delay = 0, className = "" }) {
+            const [isVisible, setIsVisible] = useState(false);
+            const ref = useRef(null);
+            useEffect(() => {
+                const observer = new IntersectionObserver(([entry]) => {
+                    if (entry.isIntersecting) setIsVisible(true);
+                }, { threshold: 0.1 });
+                if (ref.current) observer.observe(ref.current);
+                return () => observer.disconnect();
+            }, []);
+            return (
+                <div ref={ref} className={`transition-all duration-1000 transform h-full ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
+                    {children}
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-700 group-hover:text-white" />
-              </button>
-            )}
-            <button onClick={() => window.open(getWaLink(`Tenho interesse nos shows da Arena Henko`))} className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-5 rounded-3xl flex items-center gap-4 hover:border-red-600 transition-all text-left group">
-                <div className="bg-neutral-800 p-3 rounded-2xl group-hover:bg-red-600 transition-colors shrink-0 text-white"><Music className="w-8 h-8" /></div>
-                <div className="flex-1 min-w-0 text-white">
-                   <p className="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">Próximo Show</p>
-                   <p className="text-sm font-black truncate uppercase">{ENTERTAINMENT_EVENTS_DATA[0].name}</p>
-                   <p className="text-[10px] text-red-500 font-bold mt-1 uppercase">{ENTERTAINMENT_EVENTS_DATA[0].date}</p>
+            );
+        }
+
+        function TrustSeals({ iconSize = 32, textSize = "text-[10px]", alignment = "justify-start" }) {
+            return (
+                <div className={`grid grid-cols-3 gap-6 ${alignment}`}>
+                    {[
+                        { label: "Garantia de Fábrica", icon: Icons.Award },
+                        { label: "Certificação Técnica", icon: Icons.ShieldCheck },
+                        { label: "Engenharia Própria", icon: Icons.Cpu }
+                    ].map((seal, i) => (
+                        <div key={i} className="flex flex-col items-center text-center gap-3 group">
+                            <div className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800 text-blue-500 group-hover:border-blue-600 transition-all">
+                                <seal.icon size={iconSize} />
+                            </div>
+                            <p className={`${textSize} font-black uppercase text-zinc-400 tracking-tighter leading-tight group-hover:text-white transition-colors text-center`}>
+                                {seal.label.split(' ')[0]}<br/>{seal.label.split(' ').slice(1).join(' ')}
+                            </p>
+                        </div>
+                    ))}
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-700 group-hover:text-white" />
-            </button>
-          </div>
-        </div>
-      </section>
+            );
+        }
 
-      {/* Sobre */}
-      <section id="sobre" className="py-32 px-4 border-y border-neutral-900 bg-neutral-950 text-white">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-20 items-center text-left">
-          <div>
-            <span className="text-red-600 font-black text-[10px] uppercase tracking-[0.5em] mb-4 block">EXCLUSIVIDADE</span>
-            <h2 className="text-5xl md:text-7xl font-black uppercase mb-8 leading-tight">O Palco da sua <br/>Próxima História</h2>
-            <p className="text-gray-400 text-lg leading-relaxed mb-10 font-light text-white">No coração do Morumbis, a Arena Henko redefine hospitalidade. Gastronomia de alto padrão, conforto absoluto e a energia vibrante do estádio.</p>
-            <div className="grid grid-cols-3 gap-8 pt-8 border-t border-neutral-800">
-              <div><h4 className="text-3xl font-black text-white">5+</h4><p className="text-[10px] text-gray-500 uppercase font-black tracking-widest text-white">Anos</p></div>
-              <div><h4 className="text-3xl font-black text-white">100+</h4><p className="text-[10px] text-gray-500 uppercase font-black tracking-widest text-white">Eventos</p></div>
-              <div><h4 className="text-3xl font-black text-white">SP</h4><p className="text-[10px] text-gray-500 uppercase font-black tracking-widest text-white">Sede</p></div>
-            </div>
-          </div>
-          <div className="grid gap-4">
-             <div className="bg-neutral-900/50 p-8 rounded-[48px] border border-neutral-800 hover:border-red-900/50 transition-all group">
-                <Star className="text-red-600 w-8 h-8 mb-4 group-hover:scale-110 transition-transform" />
-                <h4 className="text-xl font-black uppercase mb-2">Hospitalidade Elite</h4>
-                <p className="text-gray-500 text-sm font-light">Serviço de catering premium assinado por chefs e atendimento bilíngue especializado.</p>
-             </div>
-             <div className="bg-neutral-900/50 p-8 rounded-[48px] border border-neutral-800 hover:border-red-900/50 transition-all group text-white">
-                <Shield className="text-red-600 w-8 h-8 mb-4 group-hover:scale-110 transition-transform" />
-                <h4 className="text-xl font-black uppercase mb-2">Privacidade Total</h4>
-                <p className="text-gray-500 text-sm font-light">Ambiente climatizado, seguro e reservado para networking de alto valor.</p>
-             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Serviços */}
-      <section id="servicos" className="py-32 px-4 bg-neutral-900/20 text-white">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 tracking-tighter">A Experiência Completa</h2>
-          <div className="grid md:grid-cols-3 gap-6 text-white">
-            {ARENA_SERVICES_DATA.map((s, i) => (
-              <div key={i} className="group relative h-[480px] rounded-[56px] overflow-hidden border border-neutral-800 hover:border-red-600/50 transition-all duration-700 shadow-2xl">
-                <div className="absolute inset-0 z-0"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" alt={s.title} /></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-transparent z-10"></div>
-                <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left">
-                  <div className="bg-red-900/40 p-4 rounded-3xl w-fit mb-6 text-red-500 backdrop-blur-md">{s.icon}</div>
-                  <h3 className="text-2xl font-black uppercase mb-3 leading-none text-white">{s.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed font-light">{s.desc}</p>
+        function WhatsAppButton() {
+            return (
+                <div className="fixed bottom-8 right-8 z-50">
+                    <a href="https://wa.me/5511999700703" target="_blank" rel="noopener noreferrer" className="bg-[#25D366] hover:bg-[#128C7E] text-white p-4 rounded-full shadow-2xl transition-all hover:-translate-y-2 block border border-white/20">
+                        <Icons.MessageCircle size={28} />
+                    </a>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            );
+        }
 
-      {/* Calendário */}
-      <section id="calendario" className="py-32 px-4 bg-neutral-950 text-white text-center">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-5xl font-black uppercase tracking-tighter mb-16">Temporada <span className="text-red-600">2026</span></h2>
-          
-          <div className="flex flex-wrap gap-2 mb-12 justify-center">
-            {SPORT_EVENTS_DATA.map(s => (
-              <button key={s.id} onClick={() => setActiveSportId(s.id)} className={`px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeSportId === s.id ? 'bg-red-600 text-white shadow-xl scale-105' : 'bg-neutral-900 text-gray-500 hover:text-gray-300'}`}>
-                {s.name}
-              </button>
-            ))}
-          </div>
-
-          <div className="bg-neutral-900/30 backdrop-blur-sm rounded-[60px] p-8 border border-neutral-800 shadow-3xl">
-             <div className="grid lg:grid-cols-5 gap-12 items-center text-center">
-                <div className="lg:col-span-2 flex flex-col items-center">
-                   <div className="w-48 h-48 mb-8 bg-neutral-950 rounded-[48px] p-10 flex items-center justify-center border border-neutral-800 overflow-hidden relative shadow-inner">
-                      <ImageWithFallback key={activeSportId} src={SPORT_EVENTS_DATA.find(s => s.id === activeSportId).image} className={`max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110 p-2 ${activeSportId === 3 ? 'brightness-0 invert' : ''}`} fallback={<Trophy className="w-20 h-20 text-red-600" />} />
-                   </div>
-                   <h3 className="text-3xl font-black uppercase tracking-tight leading-none text-white">{SPORT_EVENTS_DATA.find(s => s.id === activeSportId).name}</h3>
-                   <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.5em] mt-4">{SPORT_EVENTS_DATA.find(s => s.id === activeSportId).subtitle}</p>
-                </div>
-                <div className="lg:col-span-3 w-full space-y-4 text-left">
-                  <h4 className="text-red-500 text-[11px] font-black uppercase tracking-[0.5em] mb-8 flex items-center gap-3 justify-center lg:justify-start text-red-500 uppercase tracking-widest"><Clock className="w-4 h-4"/> Agenda Morumbis</h4>
-                  {SPORT_EVENTS_DATA.find(s => s.id === activeSportId).matches.length > 0 ? SPORT_EVENTS_DATA.find(s => s.id === activeSportId).matches.map((m, i) => (
-                    <div key={i} className="bg-neutral-950/80 border border-neutral-800 rounded-[32px] overflow-hidden hover:border-red-600/30 transition-all text-white">
-                        <button onClick={() => setExpandedMatchKey(expandedMatchKey === i ? null : i)} className="w-full p-6 flex items-center justify-between">
-                           <div className="flex items-center gap-6">
-                              <span className="text-lg font-black text-red-600 w-16">{m.date}</span>
-                              <div className="flex items-center gap-4">
-                                <img src={m.homeLogo} className="w-10 h-10 object-contain" alt="H" />
-                                <span className="text-xs font-black opacity-30 text-white">VS</span>
-                                <img src={m.awayLogo} className="w-10 h-10 object-contain" alt="A" />
-                              </div>
-                              <div className="hidden sm:block text-left text-white">
-                                <p className="text-sm font-black uppercase text-white">{m.home} x {m.away}</p>
-                                <p className="text-[10px] text-gray-500 font-bold uppercase">{m.time}</p>
-                              </div>
-                           </div>
-                           <ChevronDown className={`w-5 h-5 text-gray-600 transition-transform ${expandedMatchKey === i ? 'rotate-180 text-red-500' : ''}`} />
-                        </button>
-                        {expandedMatchKey === i && (
-                          <div className="p-8 border-t border-neutral-900 bg-neutral-900/20 text-center animate-fadeInUp">
-                             <div className="grid md:grid-cols-2 gap-8 mb-4 text-center">
-                                <div className="p-6 bg-black/40 rounded-[32px] border border-neutral-800 flex flex-col justify-between h-full min-h-[200px]">
-                                   <div>
-                                      <p className="text-[10px] text-gray-500 font-black uppercase mb-2 tracking-widest uppercase">Hospitalidade Arena</p>
-                                      <p className="text-2xl font-black text-white uppercase tracking-tight">2H ANTES DO JOGO</p>
-                                   </div>
-                                   <button onClick={() => window.open(getWaLink(`Quero reservar para o jogo ${m.home} x ${m.away} dia ${m.date}`))} className="w-full mt-6 bg-red-600 py-4 rounded-2xl font-black uppercase text-xs shadow-xl hover:bg-red-700 transition-colors text-white">Garantir Lugar</button>
+        // --- 3. SEÇÕES REUTILIZÁVEIS ---
+        function AdvantagesSection() {
+            return (
+                <section className="py-24 bg-black border-b border-zinc-900 text-left">
+                    <div className="container mx-auto px-6 md:px-12">
+                        <ScrollReveal>
+                            <div className="mb-20 text-left">
+                                <h2 className="text-4xl md:text-5xl font-black text-white mb-6 uppercase tracking-tight text-left">POR QUE <span className="text-blue-600 text-left">LED?</span></h2>
+                                <p className="text-zinc-500 max-w-2xl text-sm md:text-base font-medium text-left">A sinalização digital é a ferramenta mais poderosa de conversão do mercado moderno.</p>
+                            </div>
+                        </ScrollReveal>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-left">
+                            {[
+                                { label: "Mais Vendas", value: "68%", icon: Icons.TrendingUp, desc: "A sinalização digital influencia diretamente na decisão de compra." },
+                                { label: "Custo x Benefício", value: "R$ 0,15", icon: Icons.DollarSign, desc: "Custo médio por mil impressões (CPM). Mais eficaz que mídia tradicional." },
+                                { label: "Retenção Visual", value: "8/10", icon: Icons.Eye, desc: "O brilho e movimento do LED Henko captam a atenção instintivamente." },
+                                { label: "Visibilidade", value: "+30%", icon: Icons.Zap, desc: "Aumento imediato na percepção da marca em locais de alto tráfego." }
+                            ].map((stat, i) => (
+                                <div key={i} className="bg-zinc-900/40 border border-zinc-800 p-10 rounded-[2.5rem] group hover:border-blue-500/40 transition-all text-left">
+                                    <div className="mb-8 p-4 bg-black rounded-2xl inline-block border border-zinc-800 group-hover:scale-110 transition-transform"><stat.icon className="text-blue-500" /></div>
+                                    <h3 className="text-4xl font-black text-white mb-2 text-left">{stat.value}</h3>
+                                    <h4 className="text-blue-500 font-black text-[10px] uppercase tracking-widest mb-4 text-left">{stat.label}</h4>
+                                    <p className="text-zinc-500 text-sm leading-relaxed text-left">{stat.desc}</p>
                                 </div>
-                                <div className="p-6 bg-black/40 rounded-[32px] border border-neutral-800 flex flex-col items-center justify-center h-full min-h-[200px]">
-                                   <Camera className="w-8 h-8 text-red-600 mb-3" />
-                                   <h5 className="text-sm font-black text-white uppercase mb-2 text-white text-center">Fan Cam Arena</h5>
-                                   <p className="text-[10px] text-gray-500 mb-6 px-4 text-center leading-tight">Poste sua foto na Arena durante o jogo!</p>
-                                   <div className="w-full relative">
-                                      <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={(e) => handleFileUpload(e, m.id)} />
-                                      <button 
-                                        onClick={() => fileInputRef.current.click()} 
-                                        disabled={!isUploadAllowed(m.date, m.time) || isUploading}
-                                        className={`w-full py-4 rounded-2xl font-bold text-[10px] uppercase flex items-center justify-center gap-2 border transition-all ${isUploadAllowed(m.date, m.time) ? 'bg-neutral-800 text-gray-200 border-neutral-700 hover:bg-neutral-700' : 'bg-neutral-900/50 text-gray-600 border-neutral-800'}`}
-                                      >
-                                        {isUploading ? <Loader2 className="w-4 h-4 animate-spin text-white"/> : <Upload className="w-4 h-4"/>}
-                                        {isUploading ? "ENVIANDO..." : "SUBIR FOTO"}
-                                      </button>
-                                   </div>
-                                </div>
-                             </div>
-                          </div>
-                        )}
+                            ))}
+                        </div>
                     </div>
-                  )) : <div className="p-20 border border-dashed border-neutral-800 rounded-[40px] text-center opacity-30 text-white font-black uppercase tracking-widest uppercase text-white">Agenda em definição</div>}
-                </div>
-             </div>
-          </div>
-        </div>
-      </section>
+                </section>
+            );
+        }
 
-      {/* Shows - Flyers com Zoom e Brilho no Hover */}
-      <section className="py-32 px-4 bg-neutral-900/30 text-center text-white">
-         <div className="max-w-7xl mx-auto">
-            <h3 className="text-3xl font-black text-red-500 mb-16 uppercase tracking-[0.2em]">Shows & Entretenimento</h3>
-            <div className="grid md:grid-cols-3 gap-8">
-               {ENTERTAINMENT_EVENTS_DATA.map((e, i) => (
-                  <div key={i} className="flex flex-col items-center group cursor-pointer text-white" onClick={() => window.open(getWaLink(`Interesse no show do ${e.name} na Arena Henko`))}>
-                     <div className="relative rounded-[48px] overflow-hidden aspect-[4/5] border border-neutral-800 shadow-2xl w-full mb-8 transition-all duration-700 group-hover:scale-[1.03] group-hover:border-red-600/50">
-                        <img src={e.image} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 group-hover:brightness-110" alt={e.name} />
-                     </div>
-                     <span className="bg-red-600 text-white text-[10px] font-black px-5 py-1.5 rounded-full mb-4 uppercase tracking-widest">{e.date}</span>
-                     <h4 className="text-3xl font-black uppercase mb-2 tracking-tighter text-white uppercase">{e.name}</h4>
-                     <p className="text-gray-500 text-sm font-light mb-6 uppercase tracking-widest">{e.desc}</p>
-                  </div>
-               ))}
-            </div>
-         </div>
-      </section>
-
-      {/* Parceiros - LOGOS COLORIDAS (Original Master) */}
-      <section id="parceiros" className="py-32 px-8 bg-neutral-950 border-y border-neutral-900 text-white">
-         <div className="max-w-7xl mx-auto text-center">
-            <h3 className="text-[10px] text-gray-600 font-black uppercase tracking-[0.6em] mb-16">Marcas de Elite Connosco</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-12 items-center text-white">
-               {PARTNER_LOGOS_DATA.map((p, i) => (
-                  <div key={i} className={`bg-neutral-900/50 border border-neutral-800 rounded-[32px] h-32 flex items-center justify-center transition-all group hover:border-red-600/30 ${p.extraSize ? 'p-4' : 'p-8'}`}>
-                    <img src={p.logoUrl} className={`h-full w-full object-contain transition-all duration-500 group-hover:scale-110 ${p.extraSize ? 'scale-110' : ''}`} alt={p.name} />
-                  </div>
-               ))}
-            </div>
-         </div>
-      </section>
-
-      {/* Reviews */}
-      <section className="py-32 px-4 bg-neutral-900/10 text-center text-white">
-         <div className="max-w-7xl mx-auto text-white text-center">
-            <div className="flex justify-center gap-2 mb-8 text-yellow-500">
-               {[1,2,3,4,5].map(i => <Star key={i} className="w-6 h-6 fill-yellow-500 text-yellow-500" />)}
-            </div>
-            <h3 className="text-4xl font-black uppercase mb-20 tracking-tighter text-white">A Melhor Avaliação do Estádio</h3>
-            <div className="grid md:grid-cols-3 gap-8 text-left text-white">
-               {REVIEWS_DATA.map((r, i) => (
-                  <div key={i} className="bg-neutral-900/50 p-10 rounded-[56px] border border-neutral-800 relative group hover:border-red-600/30 transition-all text-white">
-                     <Quote className="w-12 h-12 text-red-600/10 absolute top-8 right-8 group-hover:text-red-600/20 transition-colors" />
-                     <p className="text-gray-300 text-sm italic mb-10 leading-relaxed font-light">"{r.text}"</p>
-                     <div className="flex items-center gap-4 text-white">
-                        <div className="w-12 h-12 bg-red-600/20 border border-red-600/30 rounded-full flex items-center justify-center font-black text-red-500 uppercase">{r.initial}</div>
-                        <div>
-                           <p className="text-white text-xs font-black uppercase tracking-wider">{r.name}</p>
-                           <p className="text-gray-600 text-[10px] font-bold uppercase">{r.role}</p>
+        function TechnicalDifferentials() {
+            return (
+                <section className="py-24 bg-zinc-950 relative border-b border-zinc-900 overflow-hidden text-left">
+                    <div className="container mx-auto px-6 md:px-12 text-left">
+                        <ScrollReveal>
+                            <div className="mb-20 text-left">
+                                <p className="text-blue-500 text-[10px] font-black uppercase tracking-[0.5em] mb-4 text-left">DNA HENKO</p>
+                                <h2 className="text-4xl md:text-5xl font-black text-white mb-6 uppercase tracking-tight text-left text-left">OS 4 PILARES DA <span className="text-blue-600 text-left">LIDERANÇA</span></h2>
+                            </div>
+                        </ScrollReveal>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+                            {[
+                                { title: "Consultoria", desc: "Engenharia de aplicação dedicada para garantir a melhor solução técnica.", icon: Icons.Settings },
+                                { title: "Lab de Reparo", desc: "Laboratório próprio avançado para manutenção interna e controle de qualidade.", icon: Icons.Wrench },
+                                { title: "Reposição Imediata", desc: "Estoque local massivo de peças originais para intervenções rápidas.", icon: Icons.Boxes },
+                                { title: "Garantia Real", desc: "Pós-venda consultivo com garantia estendida e compromisso.", icon: Icons.ShieldCheck }
+                            ].map((item, i) => (
+                                <ScrollReveal key={i} delay={i * 100}>
+                                    <div className="bg-zinc-900/50 p-10 rounded-[2.5rem] border border-zinc-800 transform transition-all duration-300 hover:-translate-y-3 hover:bg-zinc-900 h-full text-left">
+                                        <div className="mb-8 p-4 bg-black rounded-2xl inline-block border border-zinc-800 text-left"><item.icon className="text-blue-500" /></div>
+                                        <h3 className="text-xl font-black text-white mb-4 uppercase tracking-tight text-left">{item.title}</h3>
+                                        <p className="text-zinc-500 text-sm leading-relaxed font-medium text-left">{item.desc}</p>
+                                    </div>
+                                </ScrollReveal>
+                            ))}
                         </div>
-                     </div>
-                  </div>
-               ))}
-            </div>
-         </div>
-      </section>
+                    </div>
+                </section>
+            );
+        }
 
-      {/* Contato Original */}
-      <section id="contato" className="py-40 bg-neutral-950 px-6 text-center text-white border-t border-neutral-900">
-        <div className="max-w-5xl mx-auto text-white">
-          <h2 className="text-5xl md:text-8xl font-black mb-12 uppercase tracking-tighter font-black">Reserve sua <br/><span className="text-red-600 underline decoration-red-600/30 underline-offset-[12px]">Experiência.</span></h2>
-          <div className="grid md:grid-cols-3 gap-6 text-white text-center">
-             <a href="https://instagram.com/arenahenko" target="_blank" className="flex flex-col items-center p-12 bg-neutral-900/30 rounded-[56px] border border-neutral-800 hover:border-red-600 transition-all group shadow-xl"><Instagram className="w-12 h-12 text-red-600 mb-6 group-hover:scale-110 transition-transform text-red-600" /><span className="font-black text-xs uppercase tracking-widest text-white">Instagram</span></a>
-             <a href="https://wa.me/5511940741355" target="_blank" className="flex flex-col items-center p-12 bg-neutral-900/30 rounded-[56px] border border-neutral-800 hover:border-green-600 transition-all group shadow-xl text-white"><Phone className="w-12 h-12 text-green-600 mb-6 group-hover:scale-110 transition-transform text-green-600" /><span className="font-black text-xs uppercase tracking-widest text-white">WhatsApp</span></a>
-             <a href="mailto:sergio@henkoproducoes.com.br" className="flex flex-col items-center p-12 bg-neutral-900/30 rounded-[56px] border border-neutral-800 hover:border-red-600 transition-all group shadow-xl"><Mail className="w-12 h-12 text-red-600 mb-6 group-hover:scale-110 transition-transform text-red-600" /><span className="font-black text-xs uppercase tracking-widest text-white">E-mail</span></a>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-
-  const renderGallery = () => (
-    <div className="pt-32 pb-20 px-4 min-h-screen bg-neutral-950 animate-fadeIn text-center text-white">
-      <div className="max-w-7xl mx-auto text-white">
-        <button onClick={() => handleNavClick('home', '#')} className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors uppercase text-[10px] font-black tracking-widest mb-10 mx-auto border border-neutral-800 px-10 py-5 rounded-full bg-neutral-900/50 shadow-xl hover:bg-neutral-800"><ArrowLeft className="w-4 h-4" /> Voltar para o Site</button>
-        <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter mb-20 text-white text-center">Galeria da <span className="text-red-600 underline decoration-red-600/20 underline-offset-8 text-red-600 font-black">Torcida</span></h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 text-white">
-          {galleryPhotos.map((photo) => (
-            <div key={photo.id} className="aspect-[4/5] relative group overflow-hidden rounded-[56px] border border-neutral-800 bg-neutral-900 shadow-2xl transition-all hover:border-red-600/50 hover:-translate-y-3">
-              <img src={photo.image} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Moment" />
-              <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 opacity-80"></div>
-              <div className="absolute bottom-0 left-0 right-0 p-10 text-left">
-                <span className="bg-red-600 text-white text-[8px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest mb-3 inline-block border border-red-500/30 backdrop-blur-sm">{getMatchTitle(photo.matchId)}</span>
-                <p className="text-white text-lg font-black uppercase tracking-tight text-white">{photo.userName}</p>
-                <p className="text-gray-500 text-[10px] font-bold mt-1 uppercase tracking-widest">{new Date(photo.timestamp).toLocaleDateString()}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderAdmin = () => (
-    <div className="pt-32 pb-20 px-4 min-h-screen flex flex-col items-center bg-neutral-950 animate-fadeIn text-white text-center">
-       {!isAdminLoggedIn ? (
-         <div className="bg-neutral-900 p-16 rounded-[60px] border border-neutral-800 max-w-md w-full text-center mt-20 shadow-3xl text-white">
-            <LockKeyhole className="w-20 h-20 text-red-600 mx-auto mb-10 animate-pulse text-red-600" />
-            <h2 className="text-3xl font-black uppercase mb-4 tracking-tighter text-white">Área Admin</h2>
-            <form onSubmit={handleAdminLogin} className="flex flex-col gap-6 text-white">
-               <input type="password" placeholder="SENHA" className="bg-neutral-950 border border-neutral-800 rounded-2xl px-6 py-6 text-white text-center font-bold outline-none focus:border-red-600 text-2xl tracking-widest transition-all placeholder:text-gray-800 text-white" value={adminInputPass} onChange={(e) => setAdminInputPass(e.target.value)} />
-               <button type="submit" className="bg-red-600 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl hover:bg-red-700">Entrar</button>
-               {loginError && <p className="text-red-500 text-xs font-bold mt-2 text-red-500 animate-pulse">{loginError}</p>}
-            </form>
-         </div>
-       ) : (
-         <div className="w-full max-w-7xl px-4 text-white">
-            <div className="flex justify-between items-center mb-20 text-white">
-                <button onClick={() => setIsAdminLoggedIn(false)} className="bg-neutral-800 text-gray-400 px-10 py-4 rounded-full font-black uppercase text-[10px] hover:text-white transition-all shadow-xl">Sair</button>
-                <h2 className="text-4xl font-black uppercase tracking-tighter text-white">Moderação Fan Cam</h2>
-                <div className="w-24"></div>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 text-white">
-              {galleryPhotos.map((photo) => (
-                <div key={photo.id} className="relative aspect-square rounded-[48px] overflow-hidden group border border-neutral-800 bg-neutral-900 shadow-xl transition-all hover:border-red-600/50 text-white">
-                   <img src={photo.image} className="w-full h-full object-cover opacity-50" />
-                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                      {deleteConfirmId === photo.id ? (
-                        <div className="flex gap-2">
-                           <button onClick={() => handleDeletePhoto(photo.id)} className="bg-red-600 text-white p-4 rounded-full border-2 border-white hover:scale-110 transition-all shadow-2xl text-white"><Trash2 className="w-6 h-6" /></button>
-                           <button onClick={() => setDeleteConfirmId(null)} className="bg-neutral-800 text-white p-4 rounded-full border-2 border-white hover:scale-110 transition-all shadow-2xl text-white"><X className="w-6 h-6" /></button>
+        function ProjectsGallery() {
+            const projects = [
+                { id: 1, title: "Shows & Turnês", desc: "Jorge & Mateus", video: "https://i.imgur.com/q5unZpq.mp4", span: "md:col-span-2 md:row-span-1" },
+                { id: 2, title: "Postos", desc: "Sinalização Digital", video: "https://i.imgur.com/iTsFCKs.mp4", span: "md:col-span-1 md:row-span-2" },
+                { id: 3, title: "Restaurante Nagoro", desc: "Digital Experience", video: "https://i.imgur.com/bUZXFjg.mp4", span: "md:col-span-1 md:row-span-2" },
+                { id: 4, title: "Estádio MorumBIS", desc: "Painéis de Campo", video: "https://i.imgur.com/chcoJzz.mp4", span: "md:col-span-1 md:row-span-2", position: "object-top" },
+                { id: 5, title: "Grandes Eventos", desc: "Barretos • Soluções", video: "https://i.imgur.com/UZpBkLn.mp4", span: "md:col-span-2 md:row-span-1" },
+                { id: 6, title: "Residencial", desc: "Cinema Outdoor", video: "https://i.imgur.com/YDL92g0.mp4", span: "md:col-span-1 md:row-span-2" }
+            ];
+            return (
+                <section className="py-24 bg-zinc-950 text-left">
+                    <div className="container mx-auto px-6 md:px-12 text-left">
+                        <ScrollReveal><h2 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tight mb-16 text-left">NOSSOS <span className="text-blue-600 text-left">PROJETOS</span></h2></ScrollReveal>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[250px] md:auto-rows-[300px] grid-flow-dense text-left">
+                            {projects.map((proj, i) => (
+                                <ScrollReveal key={proj.id} delay={i * 100} className={proj.span}>
+                                    <div className="relative group h-full overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 text-left">
+                                        <video src={proj.video} autoPlay loop muted playsInline className={`w-full h-full object-cover transition-all duration-1000 group-hover:scale-105 opacity-80 group-hover:opacity-100 ${proj.position || 'object-center'}`} />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60 text-left"></div>
+                                        <div className="absolute bottom-0 p-8 translate-y-2 group-hover:translate-y-0 transition-transform duration-300 w-full text-left">
+                                            <h3 className="text-2xl font-black text-white mb-1 tracking-tight text-left">{proj.title}</h3>
+                                            <div className="flex items-center gap-2 text-left">
+                                                <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse text-left"></span>
+                                                <p className="text-blue-400 text-xs font-black uppercase tracking-widest font-mono text-left">{proj.desc}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ScrollReveal>
+                            ))}
                         </div>
-                      ) : (
-                        <button onClick={() => setDeleteConfirmId(photo.id)} className="bg-red-600 text-white p-6 rounded-full border-4 border-neutral-950 shadow-2xl hover:scale-110 text-white"><Trash2 className="w-6 h-6 text-white" /></button>
-                      )}
-                   </div>
+                    </div>
+                </section>
+            );
+        }
+
+        // --- 4. PÁGINAS ---
+        function HomePage({ setView }) {
+            const marqueeList = [
+                { name: "SBT", url: "https://upload.wikimedia.org/wikipedia/pt/thumb/4/41/Logotipo_do_SBT.svg/2048px-Logotipo_do_SBT.svg.png", scale: 0.9 },
+                { name: "NBA House", url: "https://upload.wikimedia.org/wikipedia/en/thumb/0/03/National_Basketball_Association_logo.svg/320px-National_Basketball_Association_logo.svg.png", scale: 0.8 },
+                { name: "São Paulo FC", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Brasao_do_Sao_Paulo_Futebol_Clube.svg/320px-Brasao_do_Sao_Paulo_Futebol_Clube.svg.png", scale: 1.0 },
+                { name: "Brahma", url: "https://www.brahma.com.br/sites/g/files/wnfebl12751/files/styles/webp/public/Logo_typografico.png.webp?itok=FyV-saVb", scale: 0.9 },
+                { name: "RodOil", url: "https://arhserrana.com.br/wp-content/uploads/elementor/forms/679d01a39c16e.png", scale: 0.9 },
+                { name: "Arena Sertanejo", url: "https://i.imgur.com/Aiax6SJ.png", scale: 1.1 },
+                { name: "Swift", url: "https://logodownload.org/wp-content/uploads/2018/02/swift-foods-logo.png", scale: 1.0 },
+            ];
+
+            return (
+                <div className="text-left animate-in">
+                    <section className="relative min-h-screen py-32 flex flex-col justify-center overflow-hidden bg-zinc-950 text-left">
+                        <div className="absolute inset-0 z-0 overflow-hidden text-left text-left">
+                            <video 
+                                src="https://i.imgur.com/MXrAThc.mp4" 
+                                autoPlay loop muted playsInline 
+                                className="w-full h-full object-cover object-right md:object-center scale-110 origin-top opacity-40 text-left" 
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-transparent text-left text-left"></div>
+                        </div>
+                        <div className="container mx-auto px-6 md:px-12 relative z-10 text-left">
+                            <ScrollReveal>
+                                <div className="max-w-5xl text-left">
+                                    <div className="inline-flex items-center gap-3 px-4 py-2 border border-blue-500/20 rounded-full bg-blue-500/10 backdrop-blur-md mb-8 text-left">
+                                        <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse text-left text-left"></span>
+                                        <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] text-left text-left">Tecnologia Global</span>
+                                    </div>
+                                    <h1 className="text-5xl md:text-8xl font-black text-white mb-10 tracking-tight uppercase leading-[0.9] text-left">PAINEL DE LED <br/> <span className="text-blue-600 text-left text-left">NÃO É TUDO IGUAL.</span></h1>
+                                    <p className="text-xl md:text-2xl text-zinc-400 max-w-2xl font-medium mb-12 leading-relaxed text-left text-left text-left">Performance real em cada pixel. A solução definitiva em LED para quem quer ser visto, sentido e lembrado.</p>
+                                    <div className="flex gap-6 mb-16 text-left">
+                                        <button onClick={() => setView('solucoes')} className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl transition-all text-left">Ver Soluções</button>
+                                        <button onClick={() => setView('contato')} className="bg-transparent border border-zinc-700 hover:border-white text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all text-left text-left">Falar com Consultor</button>
+                                    </div>
+                                    <div className="pt-8 border-t border-zinc-800/50 max-w-lg text-left text-left"><TrustSeals iconSize={20} textSize="text-[8px]" text-left /></div>
+                                </div>
+                            </ScrollReveal>
+                        </div>
+                    </section>
+
+                    <AdvantagesSection />
+                    <TechnicalDifferentials />
+
+                    <section className="py-24 bg-zinc-950 border-y border-zinc-900 marquee-mask overflow-hidden text-center text-left">
+                        <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em] mb-12 text-left px-12 text-left text-left">Nossos Parceiros</p>
+                        <div className="animate-marquee-infinite flex items-center text-left">
+                            {[...marqueeList, ...marqueeList].map((p, i) => (
+                                <div key={i} className="flex-shrink-0 px-24 md:px-32 min-w-[250px] flex items-center justify-center text-left text-left">
+                                    <img src={p.url} alt={p.name} style={{ transform: `scale(${p.scale || 1})` }} className="h-16 w-auto object-contain transition-all hover:scale-110 grayscale-0 opacity-100 text-left text-left" />
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    <ProjectsGallery />
                 </div>
-              ))}
-            </div>
-         </div>
-       )}
-    </div>
-  );
+            );
+        }
 
-  return (
-    <div className="font-sans text-gray-100 bg-neutral-950 min-h-screen selection:bg-red-600 selection:text-white overflow-x-hidden">
-      <style>{`
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fadeIn { animation: fadeIn 1s ease-out forwards; }
-        .animate-fadeInUp { animation: fadeInUp 0.6s ease-out forwards; }
-      `}</style>
+        function AboutPage() {
+            return (
+                <div className="pt-32 min-h-screen bg-black animate-in text-left">
+                    <div className="container mx-auto px-6 md:px-12 py-12 text-left">
+                        <ScrollReveal>
+                            <div className="max-w-4xl mb-20 text-left text-left">
+                                <div className="inline-flex items-center gap-3 px-4 py-2 border border-blue-500/20 rounded-full bg-blue-500/10 backdrop-blur-md mb-8 text-left text-left">
+                                    <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse text-left text-left"></span>
+                                    <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] text-left text-left">Autoridade Máxima</span>
+                                </div>
+                                <h1 className="text-5xl md:text-8xl font-black text-white mb-4 tracking-tight uppercase leading-[0.9] text-left">QUASE 20 ANOS <br/> <span className="text-blue-600 text-left text-left text-left text-left">DE INOVAÇÃO.</span></h1>
+                                <p className="text-zinc-400 text-xl font-medium max-w-3xl mt-8 text-left text-left text-left text-left">Líderes em engenharia visual de alta performance no Brasil, transformando marcas através de tecnologia de ponta.</p>
+                            </div>
+                        </ScrollReveal>
 
-      {/* TOAST VISUAL */}
-      {toast && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[2000] animate-fadeInUp">
-           <div className="bg-red-600 text-white px-8 py-4 rounded-full font-black uppercase text-xs shadow-2xl flex items-center gap-3 shadow-[0_0_40px_rgba(220,38,38,0.5)]">
-              <CheckCircle className="w-4 h-4" /> {toast}
-           </div>
-        </div>
-      )}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-32 text-left text-left text-left">
+                            {[
+                                { label: "Anos de Estrada", value: "19+" },
+                                { label: "Projetos Ativos", value: "500+" },
+                                { label: "m² Instalados", value: "15k+" },
+                                { label: "Refresh Rate", value: "7680Hz" }
+                            ].map((stat, i) => (
+                                <div key={i} className="bg-zinc-900/30 p-8 rounded-[2.5rem] border border-zinc-800 text-left">
+                                    <p className="text-blue-500 text-4xl md:text-6xl font-black mb-2 tracking-tighter text-left text-left text-left text-left">{stat.value}</p>
+                                    <p className="text-zinc-600 text-[10px] font-black uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left">{stat.label}</p>
+                                </div>
+                            ))}
+                        </div>
 
-      {/* MENU STICKY E VISÍVEL */}
-      <nav className={`sticky top-0 w-full z-[999] h-20 flex justify-between items-center px-8 border-b border-neutral-800 bg-neutral-950/95 backdrop-blur-md transition-all duration-500 text-white`}>
-        <button onClick={() => handleNavClick('home', '#')} className="hover:scale-105 transition-transform flex items-center">
-          <img src="https://i.imgur.com/cSYIvq6.png" className="h-8 w-auto" alt="Logo" />
-        </button>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-32 text-left text-left">
+                            <ScrollReveal>
+                                <div className="relative rounded-[3rem] overflow-hidden border border-zinc-800 shadow-2xl group text-left text-left text-left text-left">
+                                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070" className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-1000 text-left text-left text-left text-left" />
+                                    <div className="absolute bottom-8 left-8 bg-black/80 backdrop-blur-md p-6 rounded-2xl border border-zinc-800 max-w-xs text-left text-left text-left text-left">
+                                        <h4 className="text-white font-black text-sm uppercase tracking-widest mb-2 flex items-center gap-2 text-left text-left">
+                                            <Icons.Wrench size={16} className="text-blue-500 text-left text-left"/> Laboratório Próprio
+                                        </h4>
+                                        <p className="text-zinc-400 text-xs text-left text-left text-left text-left text-left text-left text-left">Engenharia dedicada para suporte e manutenção eletrônica avançada.</p>
+                                    </div>
+                                </div>
+                            </ScrollReveal>
+                            <div className="space-y-12 text-left">
+                                <div className="space-y-6">
+                                    <h3 className="text-3xl font-black text-white uppercase tracking-tight text-left text-left">O DNA DA HENKO</h3>
+                                    <p className="text-zinc-400 text-lg leading-relaxed font-medium text-left text-left">Liderada por Alexandre Henko, destaque na Forbes Latina, a empresa consolidou-se como referência unindo eletrônica de classe mundial com assistência técnica local imbatível no Brasil.</p>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left text-left text-left">
+                                    <div className="bg-zinc-900/50 p-8 rounded-[2rem] border border-zinc-800 text-left text-left text-left">
+                                        <Icons.Trophy size={32} className="mb-4 text-blue-500 text-left text-left text-left" />
+                                        <h4 className="text-white font-black mb-3 text-xs uppercase tracking-widest text-left text-left text-left" />Excelência em Eventos
+                                        <p className="text-zinc-500 text-sm text-left text-left text-left">Projetos que exigem 100% de confiabilidade e impacto visual imediato.</p>
+                                    </div>
+                                    <div className="bg-zinc-900/50 p-8 rounded-[2rem] border border-zinc-800 text-left text-left text-left">
+                                        <Icons.ShieldCheck size={32} className="mb-4 text-blue-500 text-left text-left text-left" />
+                                        <h4 className="text-white font-black mb-3 text-xs uppercase tracking-widest text-left text-left text-left" />Suporte Vitalício
+                                        <p className="text-zinc-500 text-sm text-left text-left text-left text-left">Pós-venda consultivo com garantia real e reposição ágil de peças.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
-        <div className="hidden sm:flex space-x-10 items-center text-white">
-          {ARENA_MENU_LINKS.map(n => (
-            <button 
-              key={n.name} 
-              onClick={() => handleNavClick(n.view, n.href)} 
-              className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors hover:text-red-500 ${currentView === n.view ? 'text-red-600 font-black' : 'text-gray-400'}`}
-            >
-              {n.name}
-            </button>
-          ))}
-          <button onClick={() => handleNavClick('home', '#contato')} className="bg-red-600 text-white px-10 py-3 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-all shadow-xl shadow-red-900/40">Reservar</button>
-        </div>
+        function SolutionsPage({ setView }) {
+            const solutions = [
+                { title: "Shows e Eventos", desc: "Festivais e turnês com montagem de alta performance.", icon: Icons.Music, image: "https://i.imgur.com/WBzKu1z.mp4" },
+                { 
+                    title: "Aeroportos", 
+                    desc: "Comunicação 24/7 moderna e durável para terminais.", 
+                    icon: Icons.Plane, 
+                    image: "https://i.imgur.com/IHw3KG4.mp4",
+                    extraZoom: true 
+                },
+                { 
+                    title: "Shopping & Varejo", 
+                    desc: "Vitrines digitais de alta definição para impacto imediato.", 
+                    icon: Icons.Store, 
+                    image: "https://i.imgur.com/aSbF4Z6.mp4",
+                    position: "object-left", // FOCO CORRIGIDO: object-left centraliza verticalmente e foca no logo à esquerda
+                    softZoom: true
+                },
+                { title: "Postos", desc: "Sinalização externa robusta com brilho inteligente.", icon: Icons.Fuel, image: "https://i.imgur.com/6X66TWf.mp4" },
+                { 
+                    title: "Igrejas & Templos", 
+                    desc: "Modernização litúrgica com experiências imersivas.", 
+                    icon: Icons.Sun, 
+                    image: "https://i.imgur.com/2BvwH8g.mp4",
+                    ultraZoom: true 
+                },
+                { 
+                    title: "Mercado Imobiliário", 
+                    desc: "Fachadas digitais e stands de vendas de luxo.", 
+                    icon: Icons.Home, 
+                    image: "https://i.imgur.com/qbTgrVg.mp4",
+                    extraZoom: true 
+                },
+                { title: "Corporativo", desc: "Video walls para recepções e salas de comando.", icon: Icons.Users, image: "https://i.imgur.com/0uKVySG.mp4" },
+                { title: "Arenas & Estádios", desc: "Placares e perímetros. Tecnologia MorumBIS.", icon: Icons.Trophy, image: "https://i.imgur.com/chcoJzz.mp4" },
+                { 
+                    title: "Manutenção Henko", 
+                    desc: "Suporte técnico e laboratório de eletrônica próprio.", 
+                    icon: Icons.Wrench, 
+                    image: "https://i.imgur.com/UWXy7Mj.mp4",
+                    extraZoom: true
+                },
+            ];
+            return (
+                <div className="pt-32 min-h-screen bg-zinc-950 pb-20 animate-in text-left text-left text-left text-left text-left">
+                    <div className="container mx-auto px-6 md:px-12 py-12 text-left text-left text-left text-left">
+                        <ScrollReveal><h1 className="text-5xl md:text-7xl font-black text-white mb-16 tracking-tight uppercase text-left text-left text-left">NOSSAS <span className="text-blue-600 text-left text-left text-left text-left text-left">SOLUÇÕES</span></h1></ScrollReveal>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 text-left text-left">
+                            {solutions.map((sol, i) => (
+                                <ScrollReveal key={sol.title} delay={i * 100}>
+                                    <div className="bg-zinc-900/50 rounded-[2.5rem] overflow-hidden border border-zinc-800 group flex flex-col h-full relative text-left text-left">
+                                        <div className="h-64 overflow-hidden relative text-left text-left text-left">
+                                            <video 
+                                                src={sol.image} 
+                                                autoPlay loop muted playsInline 
+                                                className={`w-full h-full object-cover transition-transform duration-1000 ${sol.position || 'object-center'} ${sol.ultraZoom ? 'scale-[2.2] group-hover:scale-[2.4]' : sol.extraZoom ? 'scale-[1.8] group-hover:scale-[2.0]' : sol.softZoom ? 'scale-[1.0] group-hover:scale-[1.05]' : 'group-hover:scale-110'} text-left text-left text-left`} 
+                                            />
+                                            <div className="absolute bottom-6 left-6 bg-black/80 backdrop-blur-md p-4 rounded-2xl border border-zinc-800 text-left text-left text-left"><sol.icon size={24} className="text-blue-500 text-left text-left" /></div>
+                                        </div>
+                                        <div className="p-10 flex-1 flex flex-col justify-between text-left text-left text-left">
+                                            <div className="text-left text-left text-left">
+                                                <h3 className="text-2xl font-black text-white mb-4 uppercase text-left text-left text-left">{sol.title}</h3>
+                                                <p className="text-zinc-500 text-sm mb-8 font-medium text-left text-left text-left">{sol.desc}</p>
+                                            </div>
+                                            <button onClick={() => setView('contato')} className="w-full py-4 border border-zinc-700 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all text-center text-left text-left">Solicitar Orçamento</button>
+                                        </div>
+                                    </div>
+                                </ScrollReveal>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
-        <button onClick={() => setIsMenuOpen(true)} className="sm:hidden text-white p-3 bg-neutral-900 rounded-xl border border-neutral-800 shadow-lg text-white">
-          <MenuIcon className="w-6 h-6 text-white" />
-        </button>
-      </nav>
+        function InsightsPage() {
+            const [selectedPost, setSelectedPost] = useState(null);
+            
+            const posts = [
+                { 
+                    id: 0, 
+                    title: "Henko na Forbes Latina: Inovação que transformou o mercado", 
+                    excerpt: "Trajetória de quase 20 anos é destaque internacional na edição especial de tecnologia.", 
+                    category: "noticias", 
+                    tag: "Forbes Latina", 
+                    date: "22 Jan, 2026", 
+                    image: "https://i.imgur.com/ni9OPBu.png", 
+                    isPremium: true, 
+                    content: `
+                        <h2>Henko na Forbes Latina: Liderança e Visão</h2>
+                        <p>A <strong>Forbes Latina</strong> destaca a trajetória de sucesso da Henko Produções, reconhecendo a empresa como um pilar fundamental na evolução da produção visual e tecnologia de LED de grandes espetáculos e eventos corporativos no Brasil e América Latina.</p>
+                        <br/>
+                        <p>Sob a liderança estratégica de Alexandre Henko, a empresa consolidou-se como referência no setor ao unir hardware de classe mundial com uma inteligência estratégica de application única. A matéria ressalta como a Henko não apenas fornece painéis, mas engenha soluções que impactam diretamente o valor de mercado das marcas atendidas.</p>
+                        <br/>
+                        <h3>A Diferença Henko</h3>
+                        <p>Destaque na publicação para o Laboratório de Reparo próprio e o suporte vitalício, diferenciais que garantem a longevidade dos projetos e a segurança dos investidores em um mercado de rápido avanço tecnológico.</p>
+                    ` 
+                },
+                { 
+                    id: 1, 
+                    title: "Henko no Camarote Bar Brahma: Carnaval 2026", 
+                    excerpt: "Participação oficial no Sambódromo do Anhembi confirmada com tecnologia imersiva.", 
+                    category: "noticias", 
+                    tag: "Eventos", 
+                    date: "12 Jan, 2026", 
+                    image: "https://conexaopop.com.br/wp-content/uploads/2025/07/fuPjky0p-camarote-brahma-programacao-promoview-abre-1320x879-1.webp", 
+                    content: `
+                        <h2>Henko no Sambódromo: A Experiência Bar Brahma</h2>
+                        <p>A Henko Produções confirma sua participação oficial no Camarote Bar Brahma 2026, um dos espaços mais tradicionais e prestigiados do Carnaval de São Paulo no Anhembi.</p>
+                        <br/>
+                        <p>Para esta edição, a Henko está projetando uma estrutura de LED 360º que promete transformar a área VIP em um ambiente totalmente imersivo, sincronizando conteúdo visual de alta definição com as apresentações artísticas e o desfile das escolas de samba.</p>
+                    `
+                },
+                { 
+                    id: 2, 
+                    title: "Painéis de LED em Postos de Gasolina: O Diferencial Estratégico", 
+                    excerpt: "Descubra por que a tecnologia LED se tornou indispensável para o sucesso comercial do seu posto.", 
+                    category: "artigos", 
+                    tag: "Mercado", 
+                    date: "02 Jan, 2026", 
+                    image: "https://i.imgur.com/6X66TWf.mp4", 
+                    content: `
+                        <h2>Postos de Gasolina: O Diferencial Estratégico para Atrair Clientes</h2>
+                        <p>Em um mercado onde a concorrência é acirrada e a margem de lucro depende do volume, os postos de gasolina precisam de ferramentas que parem o trânsito — literalmente. A Henko Produções traz para o setor o que há de mais moderno em comunicação visual.</p>
+                        <br/>
+                        <h3>1. Visibilidade Imbatível (Dia e Noite)</h3>
+                        <p>Diferente dos letreiros antigos e banners de lona que desbotam, os painéis de LED Henko possuem luminosidade intensa e cores vibrantes, visíveis mesmo sob sol forte ou chuva torrencial, captando o motorista a quilômetros de distância.</p>
+                        <br/>
+                        <h3>2. Agilidade na Atualização de Preços</h3>
+                        <p>Com a solução digital da Henko, você altera preços e anuncia promoções em segundos via smartphone ou central, eliminando trocas manuais lentas e perigosas para os funcionários.</p>
+                        <br/>
+                        <h3>3. ROI e Eficiência Energética</h3>
+                        <p>Nossa tecnologia de ponta consome até 40% menos energia que painéis genéricos. O aumento imediato no fluxo de pista (em média 30%) garante um retorno sobre o investimento acelerado e comprovado.</p>
+                        <br/>
+                        <h3>O Jeito Henko de Instalação</h3>
+                        <p>Analisamos os melhores ângulos de visão do fluxo veicular e aplicamos resoluções de alta performance (P3.91 até P10) preparadas para exposição externa extrema.</p>
+                    ` 
+                }
+            ];
 
-      {/* Menu Mobile */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-[1000] bg-neutral-950/98 backdrop-blur-3xl flex flex-col items-center justify-center space-y-10 md:hidden animate-fadeIn text-white text-center">
-          <button onClick={() => setIsMenuOpen(false)} className="absolute top-8 right-8 text-white p-3 border border-neutral-800 rounded-full text-white"><X className="w-10 h-10 text-white" /></button>
-          {ARENA_MENU_LINKS.map(n => (
-            <button key={n.name} onClick={() => handleNavClick(n.view, n.href)} className="text-4xl font-black uppercase hover:text-red-500 tracking-tighter text-white">{n.name}</button>
-          ))}
-          <button onClick={() => handleNavClick('home', '#contato')} className="bg-red-600 text-white px-16 py-6 rounded-full font-black text-sm uppercase tracking-widest shadow-2xl">Reservar Agora</button>
-        </div>
-      )}
+            if (selectedPost) {
+                return (
+                    <div className="pt-32 min-h-screen bg-black pb-20 animate-in text-left text-left">
+                        <div className="container mx-auto px-6 md:px-12 text-left text-left">
+                            <button onClick={() => setSelectedPost(null)} className="flex items-center gap-3 text-zinc-500 hover:text-white transition-colors mb-12 font-black uppercase text-xs tracking-widest text-left text-left text-left"><Icons.ArrowLeft size={18} /> Voltar aos Insights</button>
+                            <div className="max-w-4xl mx-auto text-left text-left">
+                                <div className={`relative rounded-[3rem] overflow-hidden border border-zinc-800 mb-12 shadow-2xl ${selectedPost.isPremium ? 'aspect-[9/16] h-[60vh] mx-auto md:w-2/3' : 'h-[45vh]'} text-left text-left text-left text-left`}>
+                                    {selectedPost.image.endsWith('.mp4') ? <video src={selectedPost.image} autoPlay loop muted playsInline className="w-full h-full object-cover" /> : <img src={selectedPost.image} alt={selectedPost.title} className="w-full h-full object-cover" />}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent text-left text-left text-left"></div>
+                                </div>
+                                <p className="text-blue-500 font-black text-xs uppercase tracking-[0.4em] mb-4 text-left text-left">{selectedPost.tag} • {selectedPost.date}</p>
+                                <h1 className="text-4xl md:text-6xl font-black text-white mb-10 tracking-tight uppercase leading-[0.9] pr-4 text-left text-left">{selectedPost.title}</h1>
+                                <div className="text-zinc-400 text-lg md:text-xl leading-relaxed blog-content text-left text-left" dangerouslySetInnerHTML={{ __html: selectedPost.content }} />
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
 
-      <main>
-        {currentView === 'home' && renderHome()}
-        {currentView === 'gallery' && renderGallery()}
-        {currentView === 'admin' && renderAdmin()}
-      </main>
+            return (
+                <div className="pt-32 min-h-screen bg-black pb-20 animate-in text-left text-left text-left text-left text-left text-left">
+                    <div className="container mx-auto px-6 md:px-12 py-12 text-left text-left text-left text-left text-left">
+                        <ScrollReveal><h1 className="text-5xl md:text-8xl font-black text-white mb-12 tracking-tight uppercase text-left text-left text-left text-left text-left">HENKO <br/> <span className="text-blue-600 text-left text-left text-left text-left text-left text-left text-left">INSIGHTS.</span></h1></ScrollReveal>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left text-left text-left text-left text-left text-left">
+                            {posts.map((post) => (
+                                <div 
+                                    key={post.id} 
+                                    onClick={() => { setSelectedPost(post); window.scrollTo(0, 0); }} 
+                                    className={`group cursor-pointer transform transition-all duration-500 hover:-translate-y-4 text-left text-left text-left text-left text-left ${post.isPremium ? 'md:col-span-2 flex flex-col md:flex-row gap-10 items-center bg-zinc-900/30 p-8 rounded-[3.5rem] border border-zinc-800 text-left text-left text-left text-left text-left text-left text-left' : 'text-left text-left text-left text-left text-left text-left text-left'}`}
+                                >
+                                    <div className={`relative overflow-hidden rounded-[2.5rem] border border-zinc-800 shadow-xl text-left text-left text-left text-left ${post.isPremium ? 'w-full md:w-[40%] aspect-[9/16] h-[60vh] flex-shrink-0 text-left text-left text-left text-left' : 'h-80 mb-8 w-full text-left text-left text-left text-left'}`}>
+                                        {post.image.endsWith('.mp4') ? <video src={post.image} autoPlay loop muted playsInline className="w-full h-full object-cover opacity-60" /> : <img src={post.image} alt={post.title} className="w-full h-full object-cover opacity-60" />}
+                                        <div className="absolute top-6 left-6 px-4 py-1.5 text-white text-[9px] font-black uppercase tracking-widest rounded-full bg-blue-600 text-left text-left text-left text-left text-left">{post.tag}</div>
+                                    </div>
+                                    <div className="flex-1 text-left text-left text-left text-left text-left text-left">
+                                        <p className="text-blue-500 font-bold text-[10px] uppercase tracking-widest mb-3 text-left text-left text-left text-left text-left text-left text-left">{post.date}</p>
+                                        <h3 className={`${post.isPremium ? 'text-4xl md:text-6xl text-left text-left text-left text-left text-left text-left' : 'text-3xl text-left text-left text-left text-left text-left text-left'} font-black text-white leading-tight uppercase mb-4 text-left text-left text-left text-left text-left text-left`}>{post.title}</h3>
+                                        <p className="text-zinc-500 font-medium text-lg leading-relaxed line-clamp-2 text-left text-left text-left text-left text-left text-left text-left">{post.excerpt}</p>
+                                        <div className="mt-6 flex items-center gap-3 text-white font-black text-[10px] uppercase text-left text-left text-left text-left text-left text-left">Ver matéria <Icons.ArrowRight size={14} className="group-hover:translate-x-2 transition-transform text-blue-600 text-left text-left text-left text-left text-left text-left text-left" /></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
-      <footer className="py-24 bg-neutral-950 border-t border-neutral-900 relative text-center text-white text-center">
-        <div className="absolute bottom-6 right-6 opacity-20 hover:opacity-100 transition-opacity cursor-pointer p-4 group" onClick={() => handleNavClick('admin')}>
-           <LockKeyhole className="w-6 h-6 text-gray-500 group-hover:text-red-600 text-white" />
-        </div>
-        <img src="https://i.imgur.com/cSYIvq6.png" className="h-12 mx-auto mb-10 grayscale opacity-30" alt="Footer Logo" />
-        <p className="text-[11px] font-bold uppercase tracking-[0.5em] text-gray-400 mb-2">Hospitalidade Arena Henko © 2026</p>
-        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-500">Morumbis • São Paulo • Brasil</p>
-      </footer>
-    </div>
-  );
-};
+        function ContactPage() {
+            const [calcWidth, setCalcWidth] = useState('');
+            const [calcHeight, setCalcHeight] = useState('');
+            const [calcDistance, setCalcDistance] = useState('');
+            const [envType, setEnvType] = useState('indoor');
+            const [calcResult, setCalcResult] = useState(null);
+            const [formData, setFormData] = useState({ name: '', phone: '', message: '' });
 
-export default App;
+            const calculateLed = () => {
+                const w = parseFloat(calcWidth); 
+                const h = parseFloat(calcHeight); 
+                const d = parseFloat(calcDistance);
+                if (!w || !h || !d) return;
+
+                let pitch = 3.9; 
+                let modelName = "";
+
+                if (envType === 'indoor') {
+                    if (d < 2) { pitch = 1.9; modelName = "P1.9 ULTRA-HD INDOOR"; } 
+                    else if (d < 4) { pitch = 2.6; modelName = "P2.6 HIGH DEFINITION INDOOR"; }
+                    else { pitch = 3.9; modelName = "P3.9 INDOOR PERFORMANCE"; }
+                } else {
+                    if (d < 5) { pitch = 3.9; modelName = "P3.9 OUTDOOR PRO (ALTO BRILHO)"; }
+                    else if (d < 10) { pitch = 5.9; modelName = "P5.9 OUTDOOR HIGH IMPACT"; }
+                    else { pitch = 10.0; modelName = "P10.0 STADIUM EDITION"; }
+                }
+
+                const area = (w * h).toFixed(2);
+                const resX = Math.round((w * 1000) / pitch);
+                const resY = Math.round((h * 1000) / pitch);
+                const avgPlates = Math.ceil(parseFloat(area) / 0.25);
+
+                const result = { 
+                    area, pitch, recommendedModel: modelName, resolution: `${resX}x${resY}`, avgPlates,
+                    environment: envType === 'indoor' ? 'Interno (Indoor)' : 'Externo (Outdoor)'
+                };
+                
+                setCalcResult(result);
+
+                const autoMsg = `Olá! Gostaria de um orçamento para o seguinte projeto Henko:
+- Ambiente: ${result.environment}
+- Modelo Sugerido: ${modelName} (P${pitch})
+- Dimensões: ${w}m x ${h}m (Total: ${area}m²)
+- Resolução Aproximada: ${resX}x${resY}px
+- Média de Placas: ~${avgPlates} unidades (Ref: 500x500mm)
+*Nota: A quantidade real de placas pode variar conforme o tamanho dos gabinetes e a engenharia do projeto.`;
+
+                setFormData(prev => ({ ...prev, message: autoMsg }));
+            };
+
+            const handleWhatsApp = (e) => {
+                e.preventDefault();
+                const text = `*Solicitação de Orçamento - Henko LED*\n\n*Nome:* ${formData.name}\n*Telefone:* ${formData.phone}\n\n*Projeto:* \n${formData.message}`;
+                window.open(`https://wa.me/5511999700703?text=${encodeURIComponent(text)}`, '_blank');
+            };
+
+            return (
+                <div className="pt-32 bg-black pb-20 min-h-screen text-left animate-in text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                    <div className="container mx-auto px-6 md:px-12 text-left text-left text-left text-left text-left text-left text-left text-left">
+                        <ScrollReveal>
+                            <h1 className="text-5xl md:text-7xl font-black text-white mb-12 uppercase leading-[0.9] text-left text-left text-left text-left">VAMOS <br/> CRIAR <span className="text-blue-600 text-left text-left text-left text-left">ALGO.</span></h1>
+                        </ScrollReveal>
+                        
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start text-left text-left text-left text-left text-left text-left">
+                            <div className="bg-zinc-900/40 border border-zinc-800 rounded-[3.5rem] p-10 text-left text-left text-left text-left text-left text-left">
+                                <div className="flex items-center gap-4 mb-8 text-left text-left text-left text-left text-left text-left text-left">
+                                    <div className="bg-blue-600 p-3 rounded-2xl text-left text-left text-left text-left text-left text-left"><Icons.Calculator size={20} className="text-white text-left text-left text-left text-left text-left" /></div>
+                                    <h3 className="text-white text-xs font-black uppercase tracking-[0.3em] text-left text-left text-left text-left">Simulador Técnico</h3>
+                                </div>
+
+                                <div className="flex bg-black p-1 rounded-2xl border border-zinc-800 mb-8 text-left text-left text-left text-left text-left text-left">
+                                    <button onClick={() => setEnvType('indoor')} className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${envType === 'indoor' ? 'bg-blue-600 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}>Indoor</button>
+                                    <button onClick={() => setEnvType('outdoor')} className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${envType === 'outdoor' ? 'bg-blue-600 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}>Outdoor</button>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-left text-left text-left text-left text-left">
+                                    <input type="number" placeholder="Largura (m)" value={calcWidth} onChange={(e) => setCalcWidth(e.target.value)} className="bg-black border border-zinc-800 p-4 text-white rounded-2xl outline-none focus:border-blue-600 text-left text-left text-left text-left text-left" />
+                                    <input type="number" placeholder="Altura (m)" value={calcHeight} onChange={(e) => setCalcHeight(e.target.value)} className="bg-black border border-zinc-800 p-4 text-white rounded-2xl outline-none focus:border-blue-600 text-left text-left text-left text-left text-left" />
+                                    <input type="number" placeholder="Visão (m)" value={calcDistance} onChange={(e) => setCalcDistance(e.target.value)} className="bg-black border border-zinc-800 p-4 text-white rounded-2xl outline-none focus:border-blue-600 text-left text-left text-left text-left text-left" />
+                                </div>
+                                <button onClick={calculateLed} className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-blue-500 transition-all shadow-xl text-center text-left text-left text-left text-left text-left">Gerar Configuração</button>
+                                
+                                {calcResult && (
+                                    <div className="mt-6 bg-black/60 border border-blue-600/20 rounded-[2rem] p-6 animate-in text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                        <p className="text-blue-500 font-bold mb-2 uppercase text-xs text-left text-left text-left text-left text-left">{calcResult.recommendedModel}</p>
+                                        <p className="text-white text-2xl font-black text-left text-left text-left text-left text-left text-left">{calcResult.area}m² | P{calcResult.pitch}</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="bg-zinc-900 p-8 md:p-12 rounded-[3.5rem] border border-blue-600/10 shadow-2xl text-left text-left text-left text-left text-left text-left">
+                                <h3 className="text-3xl font-black text-white mb-8 tracking-tight uppercase text-left text-left text-left text-left text-left">CONTATO DIRETO</h3>
+                                <form className="space-y-6 text-left text-left text-left text-left text-left text-left" onSubmit={handleWhatsApp}>
+                                    <input type="text" placeholder="Nome Completo" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full bg-black border border-zinc-800 p-6 text-white rounded-2xl outline-none focus:border-blue-600 shadow-inner text-left text-left text-left text-left text-left text-left" />
+                                    <input type="tel" placeholder="WhatsApp / Telefone" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-black border border-zinc-800 p-6 text-white rounded-2xl outline-none focus:border-blue-600 shadow-inner text-left text-left text-left text-left text-left text-left" />
+                                    <textarea placeholder="Fale sobre o projeto..." rows={6} value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} className="w-full bg-black border border-zinc-800 p-6 text-white rounded-2xl outline-none focus:border-blue-600 resize-none shadow-inner text-left text-sm leading-relaxed text-left text-left text-left text-left text-left text-left"></textarea>
+                                    <button type="submit" className="w-full bg-blue-600 text-white py-6 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-blue-500 transition-all text-center text-left text-left text-left text-left text-left">Enviar via WhatsApp</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- COMPONENTE MESTRE (APP) ---
+        function App() {
+            const [currentView, setView] = useState('home');
+
+            useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [currentView]);
+
+            return (
+                <div className="min-h-screen flex flex-col bg-black overflow-x-hidden text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                    <nav className="fixed w-full z-50 bg-black/80 backdrop-blur-xl border-b border-zinc-900 py-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                        <div className="container mx-auto px-6 md:px-12 flex justify-between items-center text-left text-left text-left text-left text-left text-left text-left">
+                            <img src="https://i.imgur.com/zXQw6Jy.png" alt="Henko Logo" className="h-10 w-auto cursor-pointer transition-transform hover:scale-105 text-left text-left text-left text-left text-left text-left" onClick={() => setView('home')} />
+                            <div className="hidden md:flex items-center space-x-10 text-left text-left text-left text-left text-left text-left text-left text-left">
+                                {['home', 'sobre', 'solucoes', 'insights'].map((v) => (
+                                    <button key={v} onClick={() => setView(v)} className={`text-[10px] font-black uppercase tracking-widest transition-all hover:text-blue-500 ${currentView === v ? 'text-blue-500 border-b-2 border-blue-500 pb-1' : 'text-zinc-500'} text-left text-left text-left text-left text-left text-left text-left text-left`}>
+                                        {v === 'solucoes' ? 'Soluções' : v === 'insights' ? 'Insights' : v.charAt(0).toUpperCase() + v.slice(1)}
+                                    </button>
+                                ))}
+                                <button 
+                                    onClick={() => setView('contato')} 
+                                    className="flex items-center gap-2 px-8 py-3 rounded-full text-white font-black text-[10px] uppercase shadow-lg btn-premium-glow transition-all text-left text-left text-left text-left text-left text-left text-left text-left text-left"
+                                >
+                                    <Icons.Zap size={14} className="fill-current text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
+                                    Orçamento Rápido
+                                </button>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <main className="flex-grow text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                        {currentView === 'home' && <HomePage setView={setView} />}
+                        {currentView === 'sobre' && <AboutPage />}
+                        {currentView === 'solucoes' && <SolutionsPage setView={setView} />}
+                        {currentView === 'insights' && <InsightsPage />}
+                        {currentView === 'contato' && <ContactPage />}
+                    </main>
+
+                    <footer className="bg-black border-t border-zinc-900 py-16 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                        <div className="container mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-10 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                            <div className="flex flex-col items-center md:items-start gap-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <img src="https://i.imgur.com/zXQw6Jy.png" alt="Henko Logo" className="h-10 opacity-80" />
+                                <p className="text-zinc-500 text-xs max-w-xs text-center md:text-left leading-relaxed italic text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Líder em engenharia visual de alta performance no Brasil.</p>
+                            </div>
+                            <p className="text-zinc-700 text-[10px] font-mono tracking-widest uppercase text-center order-3 md:order-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">© 2026 HENKO PRODUÇÕES. TODOS OS DIREITOS RESERVADOS.</p>
+                            <div className="flex gap-4 order-2 md:order-3 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <a href="#" className="w-10 h-10 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-500 hover:text-blue-500 hover:border-blue-500 transition-all text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><Icons.Zap size={18} className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /></a>
+                                <a href="#" className="w-10 h-10 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-500 hover:text-blue-500 hover:border-blue-500 transition-all text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" ><Icons.MessageCircle size={18} className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /></a>
+                            </div>
+                        </div>
+                    </footer>
+
+                    <WhatsAppButton />
+                </div>
+            );
+        }
+
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<App />);
+    </script>
+</body>
+</html>

@@ -261,11 +261,13 @@
                                         <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse text-left text-left"></span>
                                         <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] text-left">Tecnologia Global</span>
                                     </div>
-                                    <h1 className="text-5xl md:text-8xl font-black text-white mb-10 tracking-tight uppercase leading-[0.9] text-left">PAINEL DE LED <br/> <span className="text-blue-600 text-left">NÃO É TUDO IGUAL.</span></h1>
+                                    {/* FIX: leading-tight para mobile, md:leading-none para desktop */}
+                                    <h1 className="text-5xl md:text-8xl font-black text-white mb-10 tracking-tight uppercase leading-tight md:leading-none text-left">PAINEL DE LED <br/> <span className="text-blue-600 text-left">NÃO É TUDO IGUAL.</span></h1>
                                     <p className="text-xl md:text-2xl text-zinc-400 max-w-2xl font-medium mb-12 leading-relaxed text-left">Performance real em cada pixel. A solução definitiva em LED para quem quer ser visto, sentido e lembrado.</p>
-                                    <div className="flex gap-6 mb-16 text-left">
-                                        <button onClick={() => setView('solucoes')} className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl transition-all text-left">Ver Soluções</button>
-                                        <button onClick={() => setView('contato')} className="bg-transparent border border-zinc-700 hover:border-white text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all text-left">Falar com Consultor</button>
+                                    {/* FIX: flex-col para mobile, md:flex-row para desktop */}
+                                    <div className="flex flex-col md:flex-row gap-4 md:gap-6 mb-16 text-left">
+                                        <button onClick={() => setView('solucoes')} className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl transition-all text-center md:text-left">Ver Soluções</button>
+                                        <button onClick={() => setView('contato')} className="w-full md:w-auto bg-transparent border border-zinc-700 hover:border-white text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all text-center md:text-left">Falar com Consultor</button>
                                     </div>
                                     <div className="pt-8 border-t border-zinc-800/50 max-w-lg text-left"><TrustSeals iconSize={20} textSize="text-[8px]" text-left /></div>
                                 </div>
@@ -404,7 +406,7 @@
                     desc: "Vitrines digitais de alta definição para impacto imediato.", 
                     icon: Icons.Store, 
                     image: "https://i.imgur.com/aSbF4Z6.mp4",
-                    position: "object-left",
+                    position: "object-bottom", // CORREÇÃO: Foco no bottom para mostrar o logo
                     softZoom: true
                 },
                 { title: "Postos", desc: "Sinalização externa robusta com brilho inteligente.", icon: Icons.Fuel, image: "https://i.imgur.com/6X66TWf.mp4" },
@@ -555,8 +557,9 @@
                         <div className="container mx-auto px-6 md:px-12 text-left">
                             <button onClick={() => setSelectedPost(null)} className="flex items-center gap-3 text-zinc-500 hover:text-white transition-colors mb-12 font-black uppercase text-xs tracking-widest text-left"><Icons.ArrowLeft size={18} /> Voltar aos Insights</button>
                             <div className="max-w-4xl mx-auto text-left">
-                                <div className={`relative rounded-[3rem] overflow-hidden border border-zinc-800 mb-12 shadow-2xl ${selectedPost.isPremium ? 'aspect-[4/5] w-full max-w-2xl mx-auto' : 'h-[45vh]'} text-left`}>
-                                    {selectedPost.image.endsWith('.mp4') ? <video src={selectedPost.image} autoPlay loop muted playsInline className="w-full h-full object-cover" /> : <img src={selectedPost.image} alt={selectedPost.title} className={`w-full h-full ${selectedPost.isPremium ? 'object-top' : 'object-cover'}`} />}
+                                {/* FIX DA FOTO DA MARI: object-top + aspect-[3/4] para não cortar a cabeça */}
+                                <div className={`relative rounded-[3rem] overflow-hidden border border-zinc-800 mb-12 shadow-2xl ${selectedPost.isPremium ? 'aspect-[3/4] md:aspect-[4/5] w-full max-w-2xl mx-auto' : 'h-[45vh]'} text-left`}>
+                                    {selectedPost.image.endsWith('.mp4') ? <video src={selectedPost.image} autoPlay loop muted playsInline className="w-full h-full object-cover" /> : <img src={selectedPost.image} alt={selectedPost.title} className={`w-full h-full ${selectedPost.isPremium ? 'object-top object-cover' : 'object-cover'}`} />}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent text-left"></div>
                                 </div>
                                 <p className="text-blue-500 font-black text-xs uppercase tracking-[0.4em] mb-4 text-left">{selectedPost.tag} • {selectedPost.date}</p>
@@ -580,8 +583,9 @@
                                     onClick={() => { setSelectedPost(post); window.scrollTo(0, 0); }} 
                                     className={`group cursor-pointer transform transition-all duration-500 hover:-translate-y-4 text-left ${post.isPremium ? 'md:col-span-2 flex flex-col md:flex-row gap-10 items-center bg-zinc-900/30 p-8 rounded-[3.5rem] border border-zinc-800' : ''}`}
                                 >
-                                    <div className={`relative overflow-hidden rounded-[2.5rem] border border-zinc-800 shadow-xl text-left ${post.isPremium ? 'w-full md:w-[40%] aspect-[4/5] flex-shrink-0' : 'h-80 mb-8 w-full'}`}>
-                                        {post.image.endsWith('.mp4') ? <video src={post.image} autoPlay loop muted playsInline className="w-full h-full object-cover opacity-60" /> : <img src={post.image} alt={post.title} className={`w-full h-full opacity-60 ${post.isPremium ? 'object-top' : 'object-cover'}`} />}
+                                    {/* Container da imagem da lista principal */}
+                                    <div className={`relative overflow-hidden rounded-[2.5rem] border border-zinc-800 shadow-xl text-left ${post.isPremium ? 'w-full md:w-[45%] aspect-[3/4] md:aspect-[4/5] flex-shrink-0' : 'h-80 mb-8 w-full'}`}>
+                                        {post.image.endsWith('.mp4') ? <video src={post.image} autoPlay loop muted playsInline className="w-full h-full object-cover opacity-60" /> : <img src={post.image} alt={post.title} className={`w-full h-full opacity-60 ${post.isPremium ? 'object-top object-cover' : 'object-cover'}`} />}
                                         <div className="absolute top-6 left-6 px-4 py-1.5 text-white text-[9px] font-black uppercase tracking-widest rounded-full bg-blue-600 text-left">{post.tag}</div>
                                     </div>
                                     <div className="flex-1 text-left">

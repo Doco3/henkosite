@@ -14,77 +14,75 @@
         }
         body {
             font-family: 'BradescoSans', sans-serif;
-            background-color: #000;
+            background-color: #B30825;
             overflow: hidden;
             margin: 0;
             user-select: none;
         }
+        /* Forçando o peso da fonte em 500 Medium de forma absoluta */
         .text-custom {
             font-weight: 500 !important;
         }
-        /* Animação Slide-up Sequencial Blindada em Linha Reta */
+        /* Animação Slide-up Sequencial Suave baseada em GPU */
         .slide-up-item {
             opacity: 0;
-            /* O segredo: o translateX horizontal já fica fixo na base para o elemento subir reto */
-            transform: translateY(70px) translateX(var(--tx-nudge, 0px)) scaleX(var(--sx, 1)) scaleY(var(--sy, 1));
             transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.75s ease;
+            transform-origin: center center;
         }
         .slide-up-item.active {
-            opacity: var(--op, 1);
-            transform: translateY(0) translateX(var(--tx-nudge, 0px)) scaleX(var(--sx, 1)) scaleY(var(--sy, 1));
+            /* Os valores de escala e translate serão injetados dinamicamente via JS de calibração */
         }
         video::-webkit-media-controls {
             display: none !important;
         }
+        /* Customizando a barra de rolagem do painel de controle */
+        #panelVJ::-webkit-scrollbar {
+            width: 6px;
+        }
+        #panelVJ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+        }
+        #panelVJ::-webkit-scrollbar-thumb {
+            background: #e11d48;
+            border-radius: 4px;
+        }
     </style>
 </head>
-<body class="w-screen h-screen flex items-center justify-center relative bg-[#CC092F]">
+<body id="mainBody" class="w-screen h-screen flex items-center justify-center relative bg-[#B30825] transition-colors duration-300">
 
-    <!-- TELA DE LOGIN PRIVADA (LAYER DE PROTEÇÃO) -->
-    <div id="gatekeeper" class="fixed inset-0 bg-zinc-950 flex flex-col items-center justify-center z-[100] transition-opacity duration-500 opacity-100">
-        <div class="w-80 p-6 bg-zinc-900 rounded-2xl border border-zinc-800 text-center shadow-2xl">
-            <div class="w-3 h-3 rounded-full bg-rose-600 mx-auto mb-3 animate-pulse"></div>
-            <h2 class="text-white font-bold tracking-wide uppercase text-sm mb-1">Acesso Restrito</h2>
-            <p class="text-xs text-zinc-500 mb-5">Painel VJ • Banco Bradesco S.A.</p>
-            <input type="password" id="inputSenha" placeholder="Digite a senha do painel" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-center text-white font-mono text-sm focus:outline-none focus:border-rose-600 mb-3 transition-colors">
-            <button id="btnEntrar" class="w-full bg-rose-600 hover:bg-rose-700 active:scale-[0.98] transition-all text-white font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider">Desbloquear Sinal</button>
-            <p id="erroSenha" class="text-rose-500 text-[11px] mt-2 hidden">Senha incorreta. Verifique com a produção.</p>
-        </div>
-    </div>
-
-    <!-- CONTEÚDO DO APP BLOQUEADO (REVELADO APÓS SENHA) -->
-    <div id="appContent" class="absolute inset-0 w-full h-full hidden opacity-0 transition-opacity duration-700">
+    <!-- CONTEÚDO PRINCIPAL DO APP -->
+    <div id="appContent" class="absolute inset-0 w-full h-full transition-opacity duration-700">
         
-        <!-- CONTAINER DO VÍDEO INSTITUCIONAL (EM ESTILO CONTAIN FIXO EM 58%) -->
-        <div id="videoContainer" class="absolute inset-0 w-full h-full z-10 transition-opacity duration-500 opacity-100 flex items-center justify-center bg-[#CC092F]">
-            <video id="instVideo" class="w-full h-full object-fill transition-transform duration-300" style="transform: scaleX(1.2) scaleY(1.2); transform-origin: center;" muted playsinline preload="auto">
+        <!-- CONTAINER DO VÍDEO INSTITUCIONAL -->
+        <div id="videoContainer" class="absolute inset-0 w-full h-full z-10 transition-opacity duration-500 opacity-100 flex items-center justify-center bg-[#B30825]">
+            <video id="instVideo" class="w-full h-full object-fill transition-transform duration-300" style="transform-origin: center;" muted playsinline preload="auto">
                 <source src="bradesco_video_01.mp4" type="video/mp4">
             </video>
         </div>
 
-        <!-- CONTAINER DO RELÓGIO DIGITAL INLINE (ATRAZ DO VÍDEO COM FUNDO INTEGRADO) -->
-        <div id="ledDisplay" class="absolute inset-0 w-full h-full flex items-center justify-center z-0 bg-[#CC092F]">
-            <div id="grupoGeral" class="grid grid-cols-[1fr_auto_1fr] items-center justify-center w-full max-w-[90%] mx-auto text-white text-center transition-all duration-300" style="transform: scale(1.25); opacity: 1;">
+        <!-- CONTAINER DO RELÓGIO DIGITAL INLINE -->
+        <div id="ledDisplay" class="absolute inset-0 w-full h-full flex items-center justify-center z-0 bg-[#B30825]">
+            <div id="grupoGeral" class="grid grid-cols-[1fr_auto_1fr] items-center justify-center w-full max-w-[90%] mx-auto text-white text-center transition-all duration-300" style="transform-origin: center;">
                 
-                <!-- Coluna Esquerda: Data (Sobe reto em trilho isolado) -->
+                <!-- Coluna Esquerda: Data -->
                 <div class="flex justify-end items-center pr-4">
-                    <div id="itemData" class="slide-up-item text-custom text-[8vw] whitespace-nowrap" style="--sx: 0.8; --sy: 0.8; --op: 1; --tx-nudge: -57px;">
-                        <span id="txtData">03/07</span>
+                    <div id="itemData" class="slide-up-item text-custom text-[8vw] whitespace-nowrap">
+                        <span id="txtData">16/07</span>
                     </div>
                 </div>
 
-                <!-- Coluna Central: Hora + Divisores Fixos (Sobem retos) -->
+                <!-- Coluna Central: Hora + Divisores -->
                 <div class="flex items-center justify-center gap-6">
-                    <span id="itemDiv1" class="slide-up-item text-[6vw] font-light text-custom" style="--sx: 0.25; --sy: 0.57; --op: 1; --tx-nudge: -45px;">|</span>
-                    <div id="itemHora" class="slide-up-item text-custom text-[11vw] tracking-tight whitespace-nowrap" style="--sx: 1.3; --sy: 1.3; --op: 1; --tx-nudge: 0px;">
-                        <span id="txtHora">10:09</span>
+                    <span id="itemDiv1" class="slide-up-item text-[6vw] font-light text-custom">|</span>
+                    <div id="itemHora" class="slide-up-item text-custom text-[11vw] tracking-tight whitespace-nowrap">
+                        <span id="txtHora">16:58</span>
                     </div>
-                    <span id="itemDiv2" class="slide-up-item text-[6vw] font-light text-custom" style="--sx: 0.25; --sy: 0.57; --op: 1; --tx-nudge: 45px;">|</span>
+                    <span id="itemDiv2" class="slide-up-item text-[6vw] font-light text-custom">|</span>
                 </div>
 
-                <!-- Coluna Direita: Clima (Sobe reto) -->
+                <!-- Coluna Direita: Clima -->
                 <div class="flex justify-start items-center pl-4">
-                    <div id="itemClima" class="slide-up-item text-custom text-[8vw] flex items-center whitespace-nowrap" style="--sx: 0.8; --sy: 0.8; --op: 1; --tx-nudge: 57px;">
+                    <div id="itemClima" class="slide-up-item text-custom text-[8vw] flex items-center whitespace-nowrap">
                         <span id="txtTemp">21</span><span class="inline-block align-super text-[0.92em] -ml-1">°C</span>
                     </div>
                 </div>
@@ -92,102 +90,320 @@
             </div>
         </div>
 
-        <!-- BARRA OPERACIONAL SUTIL DO RODAPÉ (RESET VJ + CONFIGS SECRETA) -->
-        <div id="footerControls" class="absolute bottom-4 left-4 z-50 flex items-center gap-3 hidden">
-            <button id="btnResetVJ" class="bg-black/40 hover:bg-black/60 active:scale-95 transition-all text-[11px] text-zinc-300 hover:text-white px-3 py-1.5 rounded-lg border border-zinc-800/80 uppercase font-bold tracking-wider">
+        <!-- BARRA OPERACIONAL DO RODAPÉ (ESCONDIDA POR PADRÃO VIA DISPLAY: NONE) -->
+        <div id="footerControls" class="absolute bottom-4 left-4 z-50 flex items-center gap-3" style="display: none;">
+            <button id="btnResetVJ" class="bg-black/60 hover:bg-black/80 active:scale-95 transition-all text-[11px] text-zinc-300 hover:text-white px-3 py-1.5 rounded-lg border border-zinc-800/80 uppercase font-bold tracking-wider">
                 Reset Transmissão
             </button>
             <div id="countdownDisplay" class="bg-rose-950/80 border border-rose-800/50 px-2.5 py-1.5 rounded-lg text-rose-400 font-mono font-bold text-[11px] uppercase hidden">
                 Sinal em: <span id="countdownSeconds">5s</span>
             </div>
-            <!-- Ícone de Engrenagem Discreta para abrir Configurações -->
-            <button id="openPanelBtn" class="text-zinc-600 hover:text-zinc-400 transition-colors p-1.5">
+            <!-- Engrenagem Discreta de Engenharia -->
+            <button id="openPanelBtn" class="text-zinc-400 hover:text-zinc-200 transition-colors p-1.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </button>
         </div>
 
-        <!-- PAINEL DE CALIBRAÇÃO LATERAL (ABRE COM "H" OU CLIQUE NA ENGRENAGEM) -->
-        <div id="panelVJ" class="fixed right-0 top-0 h-full w-96 bg-zinc-950/95 text-zinc-200 p-6 shadow-2xl overflow-y-auto transform translate-x-full transition-transform duration-300 z-50 border-l border-zinc-800 text-sm">
+        <!-- PAINEL DE CALIBRAÇÃO COMPLETO (SÓ ABRE COM "H") -->
+        <div id="panelVJ" class="fixed right-0 top-0 h-full w-96 bg-zinc-950/98 text-zinc-200 p-6 shadow-2xl overflow-y-auto transform translate-x-full transition-transform duration-300 z-50 border-l border-zinc-800 text-xs">
             <div class="flex justify-between items-center mb-6 border-b border-zinc-800 pb-4">
                 <div>
-                    <h2 class="font-bold text-base tracking-wide text-white uppercase">Calibração de Sinal</h2>
-                    <p class="text-xs text-zinc-500">PROJETO OPERACIONAL - OSASCO</p>
+                    <h2 class="font-bold text-sm tracking-wide text-white uppercase">Calibrador Geral VJ</h2>
+                    <p class="text-[10px] text-zinc-500">PAINEL BRADESCO - COMPENSAÇÃO DE SINAL</p>
                 </div>
                 <button id="closePanel" class="text-zinc-400 hover:text-white text-xl">&times;</button>
             </div>
 
-            <!-- TIMING DO LOOP -->
-            <div class="bg-zinc-900/50 p-4 rounded-xl mb-6 border border-zinc-800/60">
-                <h3 class="font-semibold text-zinc-300 mb-3 flex items-center gap-2">⏱️ Configuração do Loop</h3>
+            <!-- SEÇÃO: VÍDEO DO BRADESCO -->
+            <div class="bg-zinc-900/50 p-4 rounded-xl mb-4 border border-zinc-800/60 space-y-3">
+                <h3 class="font-bold text-rose-500 uppercase tracking-wider text-[10px] border-b border-zinc-800 pb-1">📺 Ajuste do Vídeo / Logo</h3>
                 <div>
-                    <label class="flex justify-between text-xs text-zinc-400 mb-1">
-                        <span>Tempo do Relógio na Tela (segundos)</span>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Largura Vídeo (ScaleX)</span>
+                        <span id="valVideoScaleX" class="font-mono text-zinc-300 font-bold">1.20</span>
+                    </label>
+                    <input type="range" id="videoScaleX" min="0.5" max="2.5" step="0.01" value="1.20" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Altura Vídeo / Espicho (ScaleY)</span>
+                        <span id="valVideoScaleY" class="font-mono text-zinc-300 font-bold">1.20</span>
+                    </label>
+                    <input type="range" id="videoScaleY" min="0.5" max="2.5" step="0.01" value="1.20" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Deslocar X (Horizontal)</span>
+                        <span id="valVideoOffsetX" class="font-mono text-zinc-300 font-bold">0px</span>
+                    </label>
+                    <input type="range" id="videoOffsetX" min="-500" max="500" step="1" value="0" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Deslocar Y (Vertical)</span>
+                        <span id="valVideoOffsetY" class="font-mono text-zinc-300 font-bold">0px</span>
+                    </label>
+                    <input type="range" id="videoOffsetY" min="-500" max="500" step="1" value="0" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+            </div>
+
+            <!-- SEÇÃO: GRUPO GERAL (TODO O RELÓGIO JUNTO) -->
+            <div class="bg-zinc-900/50 p-4 rounded-xl mb-4 border border-zinc-800/60 space-y-3">
+                <h3 class="font-bold text-rose-500 uppercase tracking-wider text-[10px] border-b border-zinc-800 pb-1">📦 Grupo Geral Unificado</h3>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Largura Grupo (ScaleX)</span>
+                        <span id="valGrupoScaleX" class="font-mono text-zinc-300 font-bold">1.25</span>
+                    </label>
+                    <input type="range" id="grupoScaleX" min="0.5" max="2.5" step="0.01" value="1.25" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Altura Grupo (ScaleY)</span>
+                        <span id="valGrupoScaleY" class="font-mono text-zinc-300 font-bold">1.25</span>
+                    </label>
+                    <input type="range" id="grupoScaleY" min="0.5" max="2.5" step="0.01" value="1.25" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Deslocar Grupo X</span>
+                        <span id="valGrupoOffsetX" class="font-mono text-zinc-300 font-bold">0px</span>
+                    </label>
+                    <input type="range" id="grupoOffsetX" min="-500" max="500" step="1" value="0" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Deslocar Grupo Y</span>
+                        <span id="valGrupoOffsetY" class="font-mono text-zinc-300 font-bold">0px</span>
+                    </label>
+                    <input type="range" id="grupoOffsetY" min="-500" max="500" step="1" value="0" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+            </div>
+
+            <!-- SEÇÃO: ELEMENTO DATA -->
+            <div class="bg-zinc-900/50 p-4 rounded-xl mb-4 border border-zinc-800/60 space-y-3">
+                <h3 class="font-bold text-rose-500 uppercase tracking-wider text-[10px] border-b border-zinc-800 pb-1">📅 Elemento: Data</h3>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Largura (ScaleX)</span>
+                        <span id="valDataScaleX" class="font-mono text-zinc-300 font-bold">0.80</span>
+                    </label>
+                    <input type="range" id="dataScaleX" min="0.1" max="2.0" step="0.01" value="0.80" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Altura (ScaleY)</span>
+                        <span id="valDataScaleY" class="font-mono text-zinc-300 font-bold">0.80</span>
+                    </label>
+                    <input type="range" id="dataScaleY" min="0.1" max="2.0" step="0.01" value="0.80" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Deslocamento (Nudge)</span>
+                        <span id="valDataOffsetX" class="font-mono text-zinc-300 font-bold">-57px</span>
+                    </label>
+                    <input type="range" id="dataOffsetX" min="-300" max="300" step="1" value="-57" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Deslocamento Vertical Y</span>
+                        <span id="valDataOffsetY" class="font-mono text-zinc-300 font-bold">0px</span>
+                    </label>
+                    <input type="range" id="dataOffsetY" min="-300" max="300" step="1" value="0" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+            </div>
+
+            <!-- SEÇÃO: ELEMENTO RELÓGIO (HORA) -->
+            <div class="bg-zinc-900/50 p-4 rounded-xl mb-4 border border-zinc-800/60 space-y-3">
+                <h3 class="font-bold text-rose-500 uppercase tracking-wider text-[10px] border-b border-zinc-800 pb-1">⏰ Elemento: Relógio</h3>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Largura (ScaleX)</span>
+                        <span id="valClockScaleX" class="font-mono text-zinc-300 font-bold">1.30</span>
+                    </label>
+                    <input type="range" id="clockScaleX" min="0.1" max="2.5" step="0.01" value="1.30" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Altura (ScaleY)</span>
+                        <span id="valClockScaleY" class="font-mono text-zinc-300 font-bold">1.30</span>
+                    </label>
+                    <input type="range" id="clockScaleY" min="0.1" max="2.5" step="0.01" value="1.30" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Deslocamento Horizontal</span>
+                        <span id="valClockOffsetX" class="font-mono text-zinc-300 font-bold">0px</span>
+                    </label>
+                    <input type="range" id="clockOffsetX" min="-300" max="300" step="1" value="0" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Deslocamento Vertical Y</span>
+                        <span id="valClockOffsetY" class="font-mono text-zinc-300 font-bold">0px</span>
+                    </label>
+                    <input type="range" id="clockOffsetY" min="-300" max="300" step="1" value="0" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+            </div>
+
+            <!-- SEÇÃO: ELEMENTO CLIMA/TEMPERATURA -->
+            <div class="bg-zinc-900/50 p-4 rounded-xl mb-4 border border-zinc-800/60 space-y-3">
+                <h3 class="font-bold text-rose-500 uppercase tracking-wider text-[10px] border-b border-zinc-800 pb-1">🌤️ Elemento: Clima / Temp</h3>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Largura (ScaleX)</span>
+                        <span id="valClimaScaleX" class="font-mono text-zinc-300 font-bold">0.80</span>
+                    </label>
+                    <input type="range" id="climaScaleX" min="0.1" max="2.0" step="0.01" value="0.80" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Altura (ScaleY)</span>
+                        <span id="valClimaScaleY" class="font-mono text-zinc-300 font-bold">0.80</span>
+                    </label>
+                    <input type="range" id="climaScaleY" min="0.1" max="2.0" step="0.01" value="0.80" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Deslocamento (Nudge)</span>
+                        <span id="valClimaOffsetX" class="font-mono text-zinc-300 font-bold">57px</span>
+                    </label>
+                    <input type="range" id="climaOffsetX" min="-300" max="300" step="1" value="57" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Deslocamento Vertical Y</span>
+                        <span id="valClimaOffsetY" class="font-mono text-zinc-300 font-bold">0px</span>
+                    </label>
+                    <input type="range" id="climaOffsetY" min="-300" max="300" step="1" value="0" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+            </div>
+
+            <!-- SEÇÃO: ELEMENTOS DIVISORES -->
+            <div class="bg-zinc-900/50 p-4 rounded-xl mb-4 border border-zinc-800/60 space-y-3">
+                <h3 class="font-bold text-rose-500 uppercase tracking-wider text-[10px] border-b border-zinc-800 pb-1">⛓️ Elemento: Divisores (|)</h3>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Largura Divisor (ScaleX)</span>
+                        <span id="valDivScaleX" class="font-mono text-zinc-300 font-bold">0.25</span>
+                    </label>
+                    <input type="range" id="divScaleX" min="0.05" max="1.5" step="0.01" value="0.25" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Altura Divisor (ScaleY)</span>
+                        <span id="valDivScaleY" class="font-mono text-zinc-300 font-bold">0.57</span>
+                    </label>
+                    <input type="range" id="divScaleY" min="0.05" max="1.5" step="0.01" value="0.57" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Deslocar Divisor 1 (Esquerdo)</span>
+                        <span id="valDivOffsetX1" class="font-mono text-zinc-300 font-bold">-45px</span>
+                    </label>
+                    <input type="range" id="divOffsetX1" min="-300" max="300" step="1" value="-45" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Deslocar Divisor 2 (Direito)</span>
+                        <span id="valDivOffsetX2" class="font-mono text-zinc-300 font-bold">45px</span>
+                    </label>
+                    <input type="range" id="divOffsetX2" min="-300" max="300" step="1" value="45" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Deslocamento Vertical Y</span>
+                        <span id="valDivOffsetY" class="font-mono text-zinc-300 font-bold">0px</span>
+                    </label>
+                    <input type="range" id="divOffsetY" min="-300" max="300" step="1" value="0" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
+                </div>
+            </div>
+
+            <!-- SEÇÃO: TIMING DO LOOP & COR -->
+            <div class="bg-zinc-900/50 p-4 rounded-xl mb-4 border border-zinc-800/60 space-y-3">
+                <h3 class="font-bold text-rose-500 uppercase tracking-wider text-[10px] border-b border-zinc-800 pb-1">⏱️ Loop & Cor</h3>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Tempo do Relógio (segundos)</span>
                         <span id="valTempoTela" class="font-mono text-rose-500 font-bold">15s</span>
                     </label>
                     <input type="range" id="tempoTela" min="5" max="60" value="15" class="w-full accent-rose-600 bg-zinc-800 h-1 rounded">
                 </div>
+                <div>
+                    <label class="flex justify-between text-[11px] text-zinc-400 mb-1">
+                        <span>Hexadecimal do Fundo</span>
+                        <span id="valCorFundo" class="font-mono text-rose-500 font-bold">#B30825</span>
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="color" id="pickerCorFundo" value="#B30825" class="w-10 h-8 rounded bg-transparent border border-zinc-700 cursor-pointer">
+                        <input type="text" id="inputCorFundo" value="#B30825" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 text-center text-white font-mono text-[10px] focus:outline-none focus:border-rose-600">
+                    </div>
+                </div>
             </div>
-            <p class="text-center text-[11px] text-zinc-600 mt-8">Pressione <kbd class="bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-400 font-mono">H</kbd> para abrir/fechar o menu.</p>
+
+            <!-- BOTÃO DE RESET TOTAL DE FÁBRICA -->
+            <button id="btnFactoryReset" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 px-4 rounded-lg uppercase text-[10px] tracking-widest transition-colors mb-4">
+                Resetar para o Padrão
+            </button>
+
+            <p class="text-center text-[10px] text-zinc-600">Pressione <kbd class="bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-400 font-mono">H</kbd> para fechar o menu.</p>
         </div>
     </div>
 
     <script>
-        // Configuração de Segurança - Altere aqui para a senha desejada
-        const SENHA_CORRETA = 'bradesco123';
-
         const safeStorage = {
             getItem: (key) => { try { return localStorage.getItem(key); } catch(e) { return null; } },
             setItem: (key, val) => { try { localStorage.setItem(key, val); } catch(e) {} }
         };
 
-        const gatekeeper = document.getElementById('gatekeeper');
-        const appContent = document.getElementById('appContent');
-        const inputSenha = document.getElementById('inputSenha');
-        const btnEntrar = document.getElementById('btnEntrar');
-        const erroSenha = document.getElementById('erroSenha');
-
-        function checarAcesso() {
-            if (safeStorage.getItem('vj_autenticado') === 'true') {
-                liberarPainel();
-            }
-        }
-
-        function validarSenha() {
-            if (inputSenha.value === SENHA_CORRETA) {
-                safeStorage.setItem('vj_autenticado', 'true');
-                liberarPainel();
-            } else {
-                erroSenha.classList.remove('hidden');
-                inputSenha.value = '';
-                inputSenha.focus();
-            }
-        }
-
-        function liberarPainel() {
-            gatekeeper.classList.remove('opacity-100');
-            gatekeeper.classList.add('opacity-0');
-            setTimeout(() => {
-                gatekeeper.style.display = 'none';
-                appContent.classList.remove('hidden');
-                setTimeout(() => {
-                    appContent.classList.remove('opacity-0');
-                    appContent.classList.add('opacity-100');
-                    
-                    document.body.style.setProperty('--font-weight', 500);
-                    IniciarCicloTransmissao();
-                }, 50);
-            }, 500);
-        }
-
-        btnEntrar.onclick = validarSenha;
-        inputSenha.onkeydown = (e) => { if (e.key === 'Enter') validarSenha(); };
-
-        // Estados Operacionais da Transmissão do Estúdio
-        let state = {
-            tempoTela: parseInt(safeStorage.getItem('vj_tempoTela')) || 15,
-            fontWeight: 500
+        // Estado Completo de Engenharia para Calibração no Local (Todos os Sliders mapeados)
+        const defaults = {
+            tempoTela: 15,
+            corFundo: '#B30825',
+            // Vídeo
+            videoScaleX: 1.20,
+            videoScaleY: 1.20,
+            videoOffsetX: 0,
+            videoOffsetY: 0,
+            // Grupo Geral
+            grupoScaleX: 1.25,
+            grupoScaleY: 1.25,
+            grupoOffsetX: 0,
+            grupoOffsetY: 0,
+            // Data
+            dataScaleX: 0.80,
+            dataScaleY: 0.80,
+            dataOffsetX: -57,
+            dataOffsetY: 0,
+            // Hora
+            clockScaleX: 1.30,
+            clockScaleY: 1.30,
+            clockOffsetX: 0,
+            clockOffsetY: 0,
+            // Clima
+            climaScaleX: 0.80,
+            climaScaleY: 0.80,
+            climaOffsetX: 57,
+            climaOffsetY: 0,
+            // Divisores
+            divScaleX: 0.25,
+            divScaleY: 0.57,
+            divOffsetX1: -45,
+            divOffsetX2: 45,
+            divOffsetY: 0
         };
 
+        let state = {};
+        Object.keys(defaults).forEach(key => {
+            const savedValue = safeStorage.getItem(`vj_${key}`);
+            if (savedValue !== null) {
+                state[key] = isNaN(savedValue) || savedValue.startsWith('#') ? savedValue : parseFloat(savedValue);
+            } else {
+                state[key] = defaults[key];
+            }
+        });
+
+        const mainBody = document.getElementById('mainBody');
         const videoContainer = document.getElementById('videoContainer');
         const ledDisplay = document.getElementById('ledDisplay');
         const instVideo = document.getElementById('instVideo');
@@ -196,8 +412,113 @@
         const btnResetVJ = document.getElementById('btnResetVJ');
         const countdownDisplay = document.getElementById('countdownDisplay');
         const countdownSeconds = document.getElementById('countdownSeconds');
+        const btnFactoryReset = document.getElementById('btnFactoryReset');
 
-        // Sequência sincronizada de delays da Cascata
+        const grupoGeral = document.getElementById('grupoGeral');
+        const itemData = document.getElementById('itemData');
+        const itemHora = document.getElementById('itemHora');
+        const itemClima = document.getElementById('itemClima');
+        const itemDiv1 = document.getElementById('itemDiv1');
+        const itemDiv2 = document.getElementById('itemDiv2');
+
+        function applyLiveStyles() {
+            // Aplicar Cores
+            mainBody.style.backgroundColor = state.corFundo;
+            videoContainer.style.backgroundColor = state.corFundo;
+            ledDisplay.style.backgroundColor = state.corFundo;
+
+            // Vídeo
+            instVideo.style.transform = `scaleX(${state.videoScaleX}) scaleY(${state.videoScaleY}) translate(${state.videoOffsetX}px, ${state.videoOffsetY}px)`;
+
+            // Grupo Geral
+            grupoGeral.style.transform = `scaleX(${state.grupoScaleX}) scaleY(${state.grupoScaleY}) translate(${state.grupoOffsetX}px, ${state.grupoOffsetY}px)`;
+
+            // Elemento Data
+            itemData.style.transform = `scaleX(${state.dataScaleX}) scaleY(${state.dataScaleY}) translate(${state.dataOffsetX}px, ${state.dataOffsetY}px)`;
+
+            // Elemento Hora
+            itemHora.style.transform = `scaleX(${state.clockScaleX}) scaleY(${state.clockScaleY}) translate(${state.clockOffsetX}px, ${state.clockOffsetY}px)`;
+
+            // Elemento Clima
+            itemClima.style.transform = `scaleX(${state.climaScaleX}) scaleY(${state.climaScaleY}) translate(${state.climaOffsetX}px, ${state.climaOffsetY}px)`;
+
+            // Divisores
+            itemDiv1.style.transform = `scaleX(${state.divScaleX}) scaleY(${state.divScaleY}) translate(${state.divOffsetX1}px, ${state.divOffsetY}px)`;
+            itemDiv2.style.transform = `scaleX(${state.divScaleX}) scaleY(${state.divScaleY}) translate(${state.divOffsetX2}px, ${state.divOffsetY}px)`;
+        }
+
+        function syncSlidersToUI() {
+            Object.keys(defaults).forEach(key => {
+                const el = document.getElementById(key);
+                const valEl = document.getElementById(`val${key.charAt(0).toUpperCase() + key.slice(1)}`);
+                if (el) {
+                    el.value = state[key];
+                    if (valEl) {
+                        valEl.textContent = typeof state[key] === 'number' && key !== 'tempoTela' ? state[key].toFixed(2) : state[key];
+                        if (key === 'tempoTela') valEl.textContent = state[key] + 's';
+                        if (key.includes('Offset')) valEl.textContent = state[key] + 'px';
+                    }
+                }
+            });
+            document.getElementById('pickerCorFundo').value = state.corFundo;
+            document.getElementById('inputCorFundo').value = state.corFundo;
+            applyLiveStyles();
+        }
+
+        Object.keys(defaults).forEach(key => {
+            const el = document.getElementById(key);
+            if (el) {
+                el.oninput = (e) => {
+                    let val = parseFloat(e.target.value);
+                    state[key] = val;
+                    safeStorage.setItem(`vj_${key}`, val);
+                    const valEl = document.getElementById(`val${key.charAt(0).toUpperCase() + key.slice(1)}`);
+                    if (valEl) {
+                        valEl.textContent = val;
+                        if (key === 'tempoTela') valEl.textContent = val + 's';
+                        if (key.includes('Offset')) valEl.textContent = val + 'px';
+                        if (!key.includes('Offset') && key !== 'tempoTela') valEl.textContent = val.toFixed(2);
+                    }
+                    applyLiveStyles();
+                };
+            }
+        });
+
+        // Controles de Cor de Fundo
+        const pickerCorFundo = document.getElementById('pickerCorFundo');
+        const inputCorFundo = document.getElementById('inputCorFundo');
+        const valCorFundo = document.getElementById('valCorFundo');
+
+        pickerCorFundo.oninput = (e) => {
+            const novaCor = e.target.value;
+            inputCorFundo.value = novaCor;
+            valCorFundo.textContent = novaCor;
+            state.corFundo = novaCor;
+            safeStorage.setItem('vj_corFundo', novaCor);
+            applyLiveStyles();
+        };
+
+        inputCorFundo.oninput = (e) => {
+            const novaCor = e.target.value;
+            if (novaCor.match(/^#[0-9A-F]{6}$/i)) {
+                pickerCorFundo.value = novaCor;
+                valCorFundo.textContent = novaCor;
+                state.corFundo = novaCor;
+                safeStorage.setItem('vj_corFundo', novaCor);
+                applyLiveStyles();
+            }
+        };
+
+        btnFactoryReset.onclick = () => {
+            if (confirm("Tem certeza que deseja resetar todas as calibrações para as proporções padrões?")) {
+                Object.keys(defaults).forEach(key => {
+                    try { localStorage.removeItem(`vj_${key}`); } catch(e) {}
+                    state[key] = defaults[key];
+                });
+                syncSlidersToUI();
+            }
+        };
+
         const animItems = [
             { id: 'itemData', delay: 100 },
             { id: 'itemDiv1', delay: 300 },
@@ -215,14 +536,15 @@
             ledDisplay.classList.add('opacity-0');
             
             animItems.forEach(item => {
-                document.getElementById(item.id).classList.remove('active');
+                const el = document.getElementById(item.id);
+                if (el) el.classList.remove('active');
             });
 
             setTimeout(() => {
                 videoContainer.classList.remove('opacity-0');
                 videoContainer.classList.add('opacity-100');
                 instVideo.currentTime = 0;
-                instVideo.play().catch(e => console.log("Aguardando interação inicial."));
+                instVideo.play().catch(e => console.log("Aguardando ativação do autoplay."));
             }, 500);
         }
 
@@ -236,7 +558,8 @@
 
                 animItems.forEach(item => {
                     setTimeout(() => {
-                        document.getElementById(item.id).classList.add('active');
+                        const el = document.getElementById(item.id);
+                        if (el) el.classList.add('active');
                     }, item.delay);
                 });
 
@@ -247,7 +570,7 @@
             }, 400); 
         };
 
-        // Função de Reset e Contagem Regressiva de Sincronismo (VJ Show)
+        // Botão de Reset e Contagem Regressiva VJ Show
         btnResetVJ.onclick = () => {
             clearTimeout(transmissionTimeout);
             clearInterval(countdownInterval);
@@ -257,7 +580,10 @@
             videoContainer.classList.add('opacity-0');
             ledDisplay.classList.remove('opacity-100');
             ledDisplay.classList.add('opacity-0');
-            animItems.forEach(item => document.getElementById(item.id).classList.remove('active'));
+            animItems.forEach(item => {
+                const el = document.getElementById(item.id);
+                if (el) el.classList.remove('active');
+            });
 
             let timeLeft = 5;
             countdownSeconds.textContent = timeLeft + 's';
@@ -277,8 +603,10 @@
 
         function updateClock() {
             const agora = new Date();
-            document.getElementById('txtHora').textContent = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('txtData').textContent = agora.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+            const txtHora = document.getElementById('txtHora');
+            const txtData = document.getElementById('txtData');
+            if (txtHora) txtHora.textContent = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            if (txtData) txtData.textContent = agora.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
         }
 
         async function fetchWeatherOsasco() {
@@ -286,46 +614,46 @@
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-23.5325&longitude=-46.7917&current_weather=true');
                 const data = await res.json();
                 if (data && data.current_weather) {
-                    document.getElementById('txtTemp').textContent = Math.round(data.current_weather.temperature);
+                    const txtTemp = document.getElementById('txtTemp');
+                    if (txtTemp) txtTemp.textContent = Math.round(data.current_weather.temperature);
                 }
             } catch (e) {
-                console.log("Erro ao buscar clima de Osasco.");
+                console.log("Erro de conexão ao buscar clima.");
             }
         }
 
         window.addEventListener('keydown', (e) => {
             if (e.key.toLowerCase() === 'h') {
-                panelVJ.classList.toggle('translate-x-full');
-                footerControls.classList.toggle('hidden');
+                const isHidden = panelVJ.classList.contains('translate-x-full');
+                if (isHidden) {
+                    panelVJ.classList.remove('translate-x-full');
+                    footerControls.style.display = 'flex';
+                } else {
+                    panelVJ.classList.add('translate-x-full');
+                    footerControls.style.display = 'none';
+                }
             }
         });
+
         document.getElementById('closePanel').onclick = () => {
             panelVJ.classList.add('translate-x-full');
-            footerControls.classList.add('hidden');
+            footerControls.style.display = 'none';
         };
+
         document.getElementById('openPanelBtn').onclick = () => {
             panelVJ.classList.remove('translate-x-full');
-            footerControls.classList.remove('hidden');
+            footerControls.style.display = 'flex';
         };
 
-        const sliderTempo = document.getElementById('tempoTela');
-        const valTempoText = document.getElementById('valTempoTela');
-        
-        sliderTempo.oninput = (e) => {
-            state.tempoTela = parseInt(e.target.value);
-            valTempoText.textContent = state.tempoTela + 's';
-            safeStorage.setItem('vj_tempoTela', state.tempoTela);
+        // Inicialização Geral do Aplicativo ao carregar a página
+        window.onload = function () {
+            syncSlidersToUI();
+            updateClock();
+            fetchWeatherOsasco();
+            setInterval(updateClock, 1000);
+            setInterval(fetchWeatherOsasco, 300000);
+            IniciarCicloTransmissao();
         };
-
-        sliderTempo.value = state.tempoTela;
-        valTempoText.textContent = state.tempoTela + 's';
-        
-        setInterval(updateClock, 1000);
-        setInterval(fetchWeatherOsasco, 300000);
-        updateClock();
-        fetchWeatherOsasco();
-
-        checarAcesso();
     </script>
 </body>
 </html>
